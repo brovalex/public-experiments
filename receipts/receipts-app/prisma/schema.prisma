@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Receipt {
+  id       String @id @default(cuid())
+  filename String // IMG_4549.jpg
+
+  receiptText ReceiptText[]
+  expenses    Expense[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReceiptText {
+  id              Int     @id @default(autoincrement())
+  text            String
+  boundingBox     String? // it's actually a JSON, need to deserialize after; eventually use Postgress
+  confidenceScore Float?
+
+  receipt   Receipt @relation(fields: [receiptId], references: [id])
+  receiptId String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Expense   Expense[]
+}
+
+model Expense {
+  id        Int   @id @default(autoincrement())
+  priceEach Float
+  quantity  Float
+
+  receiptText     ReceiptText   @relation(fields: [receiptTextId], references: [id])
+  receiptTextId   Int
+  referenceItemId Int
+  referenceItem   ReferenceItem @relation(fields: [referenceItemId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Receipt   Receipt? @relation(fields: [receiptId], references: [id])
+  receiptId String?
+}
+
+model ReferenceItem {
+  id              Int           @id @default(autoincrement())
+  name            String
+  quantity        Float
+  unitOfMeasureId Int
+  unitOfMeasure   UnitOfMeasure @relation(fields: [unitOfMeasureId], references: [id])
+  price           Float
+  referenceUrl    String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Expense   Expense[]
+}
+
+model UnitOfMeasure {
+  id            Int             @id @default(autoincrement())
+  name          String
+  ReferenceItem ReferenceItem[]
+}
