@@ -15,7 +15,6 @@ model Receipt {
   filename String // IMG_4549.jpg
 
   receiptText ReceiptText[]
-  expenses    Expense[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -47,8 +46,6 @@ model Expense {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Receipt   Receipt? @relation(fields: [receiptId], references: [id])
-  receiptId String?
 }
 
 model ReferenceItem {
@@ -58,6 +55,7 @@ model ReferenceItem {
   unitOfMeasureId Int
   unitOfMeasure   UnitOfMeasure @relation(fields: [unitOfMeasureId], references: [id])
   price           Float
+  pricePerWeight  Float
   referenceUrl    String?
 
   createdAt DateTime  @default(now())
