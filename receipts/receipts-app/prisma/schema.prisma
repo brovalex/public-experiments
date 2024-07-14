@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  recursive_type_depth = -1
 }
 
 datasource db {
@@ -11,7 +12,7 @@ datasource db {
 }
 
 model Receipt {
-  id       String @id @default(cuid())
+  id       Int     @id @default(autoincrement())
   filename String // IMG_4549.jpg
 
   receiptText ReceiptText[]
@@ -27,7 +28,7 @@ model ReceiptText {
   confidenceScore Float?
 
   receipt   Receipt @relation(fields: [receiptId], references: [id])
-  receiptId String
+  receiptId Int
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
