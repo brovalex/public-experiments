@@ -25,10 +25,10 @@ model ReceiptText {
   id              Int     @id @default(autoincrement())
   text            String
   boundingBox     String? // it's actually a JSON, need to deserialize after; eventually use Postgress
-  confidenceScore Float?
+  confidenceScore Float? // remove this, don't think it's needed
 
-  receipt   Receipt @relation(fields: [receiptId], references: [id])
-  receiptId Int
+  receipt   Receipt @relation(fields: [receiptId], references: [id]) // should be reference to image file not receipt!
+  receiptId Int // change
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
