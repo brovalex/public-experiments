@@ -12,10 +12,26 @@ datasource db {
 }
 
 model Receipt {
-  id       Int     @id @default(autoincrement())
-  filename String // IMG_4549.jpg
+  id              Int       @id @default(autoincrement())
+  expenseId       Int
+  expenses        Expense[]
+  imageFiles      ImageFile[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-  receiptText ReceiptText[]
+model Expense {
+  id        Int   @id @default(autoincrement())
+  priceEach Float
+  quantity  Float
+
+  receiptId       Int
+  receipt         Receipt       @relation(fields: [receiptId], references: [id])
+  receiptTextId   Int           @unique
+  receiptText     ReceiptText   @relation(fields: [receiptTextId], references: [id])
+  referenceItemId Int           @unique
+  referenceItem   ReferenceItem @relation(fields: [referenceItemId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,47 +41,38 @@ model ReceiptText {
   id              Int     @id @default(autoincrement())
   text            String
   boundingBox     String? // it's actually a JSON, need to deserialize after; eventually use Postgress
-  confidenceScore Float? // remove this, don't think it's needed
 
-  receipt   Receipt @relation(fields: [receiptId], references: [id]) // should be reference to image file not receipt!
-  receiptId Int // change
+  expenseId       Int     @unique
+  expense         Expense?
+  imageFileId     Int
+  imageFile       ImageFile @relation(fields: [imageFileId], references: [id])
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Expense   Expense[]
 }
 
-model Expense {
-  id        Int   @id @default(autoincrement())
-  priceEach Float
-  quantity  Float
+model ImageFile {                                         // as opposed to RawImageFile (not implemented yet) 
+  id       Int     @id @default(autoincrement())
+  url      String                                         // ./store/optimized_images/1.jpg
 
-  receiptText     ReceiptText   @relation(fields: [receiptTextId], references: [id])
-  receiptTextId   Int
-  referenceItemId Int
-  referenceItem   ReferenceItem @relation(fields: [referenceItemId], references: [id])
+  receiptId       Int?
+  receipt         Receipt?     @relation(fields: [receiptId], references: [id])
+  receiptText     ReceiptText[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt   
 }
 
 model ReferenceItem {
   id              Int           @id @default(autoincrement())
   name            String
   quantity        Float
-  unitOfMeasureId Int
-  unitOfMeasure   UnitOfMeasure @relation(fields: [unitOfMeasureId], references: [id])
+
   price           Float
   pricePerWeight  Float
   referenceUrl    String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Expense   Expense[]
-}
-
-model UnitOfMeasure {
-  id            Int             @id @default(autoincrement())
-  name          String
-  ReferenceItem ReferenceItem[]
+  Expense   Expense?
 }
