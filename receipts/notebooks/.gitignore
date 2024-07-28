@@ -1,3 +1,6 @@
-./raw/*
-./receipts/*
-./.temp/
+raw/*
+receipts/*
+.temp/*
+.DS_Store
+*/.venv/*
+.env
