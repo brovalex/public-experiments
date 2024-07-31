@@ -67,6 +67,7 @@ model ReferenceItem {
   id              Int           @id @default(autoincrement())
   name            String
   quantity        Float
+  unitOfMeasure   String
 
   price           Float
   pricePerWeight  Float
