@@ -13,7 +13,6 @@ datasource db {
 
 model Receipt {
   id              Int       @id @default(autoincrement())
-  expenseId       Int
   expenses        Expense[]
   imageFiles      ImageFile[]
   
@@ -28,8 +27,8 @@ model Expense {
 
   receiptId       Int
   receipt         Receipt       @relation(fields: [receiptId], references: [id])
-  receiptTextId   Int           @unique
-  receiptText     ReceiptText   @relation(fields: [receiptTextId], references: [id])
+  receiptTextId   Int?           @unique
+  receiptText     ReceiptText?   @relation(fields: [receiptTextId], references: [id])
   referenceItemId Int           @unique
   referenceItem   ReferenceItem @relation(fields: [referenceItemId], references: [id])
 
@@ -42,8 +41,8 @@ model ReceiptText {
   text            String
   boundingBox     String? // it's actually a JSON, need to deserialize after; eventually use Postgress
 
-  expenseId       Int     @unique
   expense         Expense?
+
   imageFileId     Int
   imageFile       ImageFile @relation(fields: [imageFileId], references: [id])
 
