@@ -1,4 +1,4 @@
-// app/api/reference-item/route.js
+// app/api/referenceItem/route.js
 
 import { PrismaClient } from '@prisma/client';
 
