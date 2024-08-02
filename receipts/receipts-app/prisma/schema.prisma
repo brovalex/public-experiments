@@ -29,7 +29,7 @@ model Expense {
   receipt         Receipt       @relation(fields: [receiptId], references: [id])
   receiptTextId   Int?           @unique
   receiptText     ReceiptText?   @relation(fields: [receiptTextId], references: [id])
-  referenceItemId Int           @unique
+  referenceItemId Int
   referenceItem   ReferenceItem @relation(fields: [referenceItemId], references: [id])
 
   createdAt DateTime @default(now())
@@ -74,5 +74,5 @@ model ReferenceItem {
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Expense   Expense?
+  Expense   Expense[]
 }
