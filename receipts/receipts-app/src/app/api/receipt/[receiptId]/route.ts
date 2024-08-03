@@ -11,7 +11,14 @@ export async function GET(req: NextRequest, { params }: { params: { receiptId: s
     console.log(receiptId)
     const receipt = await prisma.receipt.findUnique({
       where: { id: Number(receiptId) },
-      include: { expenses: true, imageFiles: true },
+      include: { 
+        expenses: {
+            include: { 
+                referenceItem: true,
+                receiptText: true,
+            },
+        }, 
+        imageFiles: true },
     });
     return NextResponse.json(receipt);
   } catch (error) {
