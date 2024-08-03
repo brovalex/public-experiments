@@ -16,11 +16,12 @@
 //   updatedAt DateTime @updatedAt
 // }
 
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   try {
     const { priceEach, quantity, receiptId, receiptTextId, referenceItemId } = await req.json();
 
@@ -34,10 +35,9 @@ export async function POST(req) {
         "referenceItem": { connect: { id: referenceItemId } },
       }
     });
-
-    return new Response(JSON.stringify(newExpense), { status: 200 });
+    return NextResponse.json(newExpense, { status: 201 });
   } catch (error) {
     console.error('Error creating receipt text:', error);
-    return new Response(JSON.stringify({ error: 'Failed to create receipt text '+error }), { status: 500 });
+    return NextResponse.json({ error: 'Failed to create expense '+error }, { status: 500 });
   }
 }

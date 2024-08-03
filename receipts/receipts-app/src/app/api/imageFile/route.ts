@@ -12,11 +12,12 @@
 //   updatedAt DateTime @updatedAt   
 // }
 
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   try {
     const { url, receiptId } = await req.json();
 
@@ -27,10 +28,9 @@ export async function POST(req) {
         receipt: { connect: { id: receiptId } },
       },
     });
-
-    return new Response(JSON.stringify(newImageFile), { status: 200 });
+    return NextResponse.json(newImageFile, { status: 201 });
   } catch (error) {
     console.error('Error creating image file:', error);
-    return new Response(JSON.stringify({ error: 'Failed to create image file '+error }), { status: 500 });
+    return NextResponse.json({ error: 'Failed to create image file '+error }, { status: 500 });
   }
 }

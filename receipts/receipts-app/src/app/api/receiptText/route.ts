@@ -14,11 +14,12 @@
 //   updatedAt DateTime  @updatedAt
 // }
 
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   try {
     const { text, boundingBox, expenseId, imageFileId } = await req.json();
 
@@ -28,7 +29,7 @@ export async function POST(req) {
     });
 
     if (!imageFile) {
-      return new Response(JSON.stringify({ error: 'ImageFile not found' }), { status: 404 });
+      return NextResponse.json({ error: 'ImageFile not found' }, { status: 404 });
     }
 
     // Create a new ReferenceItem
@@ -39,10 +40,9 @@ export async function POST(req) {
         "imageFile": { connect: { id: imageFileId } },
       }
     });
-
-    return new Response(JSON.stringify(newReceiptText), { status: 200 });
+    return NextResponse.json(newReceiptText, { status: 201 });
   } catch (error) {
     console.error('Error creating receipt text:', error);
-    return new Response(JSON.stringify({ error: 'Failed to create receipt text '+error }), { status: 500 });
+    return NextResponse.json({ error: 'Failed to create receipt text '+error }, { status: 500 });
   }
 }
