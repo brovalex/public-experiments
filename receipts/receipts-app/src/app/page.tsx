@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { Button } from 'flowbite-react';
 
 // export default function Home() {
 //   return (
@@ -18,6 +19,8 @@ const Home = async () => {
 
   return (
     <div className="p-4 flex flex-col gap-y-4">
+      <Button>Click me</Button>
+      
       <h2>Home</h2>
 
       <ul className="flex flex-col gap-y-2">
@@ -25,6 +28,7 @@ const Home = async () => {
           <li key={expense.id}>{expense.priceEach}</li>
         ))}
       </ul>
+
     </div>
   );
 };
