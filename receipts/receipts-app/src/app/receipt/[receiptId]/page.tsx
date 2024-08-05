@@ -45,26 +45,39 @@ const ReceiptPage = () => {
                     </Table.HeadCell>
                     </Table.Head>
                     {expenses.length > 0 ? (
+                        <Table.Body className="divide-y">
+                            {expenses.map((expense: PrismaExpense) => (
+                                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={expense.id}>
+                                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                        <span>Product name not implement yet</span>
+                                        <p className="font-normal text-xs text-slate-400">{expense.referenceItem.name}</p>
+                                    </Table.Cell>
+                                    <Table.Cell>{expense.quantity} ×</Table.Cell>
+                                    <Table.Cell>{expense.priceEach}</Table.Cell>
+                                    <Table.Cell>
+                                        <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                                            Edit
+                                        </a>
+                                    </Table.Cell>
+                                </Table.Row>
+                            ))}
+                        </Table.Body>
+                    ) : (
+                        <Table.Body className="divide-y">
+                            <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                    <p>No expenses on this receipt. </p>
+                                </Table.Cell>
+                            </Table.Row>
+                        </Table.Body>
+                    )}
                     <Table.Body className="divide-y">
-                    {expenses.map((expense: PrismaExpense) => (
-                        <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={expense.id}>
+                        <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                             <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                <span>Product name not implement yet</span>
-                                <p className="font-normal text-xs text-slate-400">{expense.referenceItem.name}</p>
-                            </Table.Cell>
-                            <Table.Cell>{expense.quantity} ×</Table.Cell>
-                            <Table.Cell>{expense.priceEach}</Table.Cell>
-                            <Table.Cell>
-                            <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                                Edit
-                            </a>
+                                <p>Test.</p>
                             </Table.Cell>
                         </Table.Row>
-                    ))}
                     </Table.Body>
-                    ) : (
-                        <p>No expenses on this receipt. </p>
-                    )}
                 </Table>
                 {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
             </div>
