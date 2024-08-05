@@ -26,7 +26,31 @@ const ReceiptPage = () => {
     
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     const expenses = receipt?.expenses ?? [];
+<<<<<<< Updated upstream
     
+=======
+    // const boxes = ... TODO: implement
+    const boxes = [
+        [[165, 910], [657, 910], [657, 959], [165, 959]],
+        [[163, 1112], [452, 1112], [452, 1156], [163, 1156]]
+    ];
+
+    const formatCurrency = (value: number): string => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(value);
+    };
+
+    interface CurrencyDisplayProps {
+        amount: number;
+    }
+
+    const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({ amount }) => {
+        return <div>{formatCurrency(amount)}</div>;
+    };
+
+>>>>>>> Stashed changes
     return (
         <div className="flex h-screen">
             <div className="w-1/2 p-4">
@@ -42,8 +66,8 @@ const ReceiptPage = () => {
                 <Table className="table-auto">
                     <Table.Head>
                     <Table.HeadCell>Item</Table.HeadCell>
-                    <Table.HeadCell>Quantity</Table.HeadCell>
-                    <Table.HeadCell>Price Each</Table.HeadCell>
+                    <Table.HeadCell className="text-right">Quantity</Table.HeadCell>
+                    <Table.HeadCell className="text-right">Price Each</Table.HeadCell>
                     <Table.HeadCell>
                         <span className="sr-only">Edit</span>
                     </Table.HeadCell>
@@ -56,8 +80,10 @@ const ReceiptPage = () => {
                                         <span>Product name not implement yet</span>
                                         <p className="font-normal text-xs text-slate-400">{expense.referenceItem.name}</p>
                                     </Table.Cell>
-                                    <Table.Cell>{expense.quantity} ×</Table.Cell>
-                                    <Table.Cell>{expense.priceEach}</Table.Cell>
+                                    <Table.Cell className="text-right">{expense.quantity} ×</Table.Cell>
+                                    <Table.Cell className="text-right">
+                                        <CurrencyDisplay amount={expense.priceEach} />
+                                    </Table.Cell>
                                     <Table.Cell>
                                         <div className="flex gap-1">
                                             <Pen className="w-5 h-5 text-cyan-600" />
