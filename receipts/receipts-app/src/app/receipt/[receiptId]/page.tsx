@@ -8,6 +8,23 @@ import { ReceiptWithRelationships } from '@/types/receipt.d';
 import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
+import CreatableSelect from 'react-select/creatable';
+
+interface Option {
+    readonly label: string;
+    readonly value: string;
+}
+  
+const createOption = (label: string) => ({
+    label,
+    value: label.toLowerCase().replace(/\W/g, ''),
+});
+
+const defaultOptions = [
+    createOption('Schar hamburger buns (4 count)'),
+    createOption('Schar hot dog buns (4 count)'),
+    createOption('Three'),
+];
 
 const ReceiptPage = () => {
     const params = useParams();
@@ -26,6 +43,20 @@ const ReceiptPage = () => {
     
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     const expenses = receipt?.expenses ?? [];
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [options, setOptions] = useState(defaultOptions);
+    const [value, setValue] = useState<Option | null>();
+  
+    const handleCreateProduct = (inputValue: string) => {
+      setIsLoading(true);
+      setTimeout(() => {
+        const newOption = createOption(inputValue);
+        setIsLoading(false);
+        setOptions((prev) => [...prev, newOption]);
+        setValue(newOption);
+      }, 1000);
+    };
     
     return (
         <div className="flex h-screen">
@@ -87,7 +118,15 @@ const ReceiptPage = () => {
                                     <div className="mb-2 block">
                                     <Label htmlFor="product" value="Product" />
                                     </div>
-                                    <TextInput id="product" type="text" required />
+                                    <CreatableSelect
+                                        isClearable
+                                        isDisabled={isLoading}
+                                        isLoading={isLoading}
+                                        onChange={(newValue) => setValue(newValue)}
+                                        onCreateOption={handleCreateProduct}
+                                        options={options}
+                                        value={value}
+                                    />
                                 </div>
                                 <div className="flex space-x-4">
                                     <div className="w-1/2">
