@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import { Expense as PrismaExpense } from '@prisma/client';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
 import { Table } from "flowbite-react";
+import { Button, Label, TextInput } from "flowbite-react";
+import { DrawSquare, Pen } from "flowbite-react-icons/outline";
 
 const ReceiptPage = () => {
     const params = useParams();
@@ -35,7 +37,7 @@ const ReceiptPage = () => {
                 )}
             </div>
             <div className="w-1/2 p-4">
-                <Table>
+                <Table className="table-auto">
                     <Table.Head>
                     <Table.HeadCell>Item</Table.HeadCell>
                     <Table.HeadCell>Quantity</Table.HeadCell>
@@ -55,9 +57,12 @@ const ReceiptPage = () => {
                                     <Table.Cell>{expense.quantity} ×</Table.Cell>
                                     <Table.Cell>{expense.priceEach}</Table.Cell>
                                     <Table.Cell>
-                                        <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                                            Edit
-                                        </a>
+                                        <div className="flex gap-1">
+                                            <Pen className="w-5 h-5 text-cyan-600" />
+                                            <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                                                Edit
+                                            </a>
+                                        </div>
                                     </Table.Cell>
                                 </Table.Row>
                             ))}
@@ -71,10 +76,42 @@ const ReceiptPage = () => {
                             </Table.Row>
                         </Table.Body>
                     )}
-                    <Table.Body className="divide-y">
+                    <Table.Body className="divide-y border-t">
                         <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                <p>Test.</p>
+                            <Table.Cell colSpan={4}>
+                                <form className="flex w-full flex-col gap-4">
+                                <h2 className="text-base font-semibold text-gray-900">Add item</h2>
+                                <div>
+                                    <div className="mb-2 block">
+                                    <Label htmlFor="product" value="Product" />
+                                    </div>
+                                    <TextInput id="product" type="text" required />
+                                </div>
+                                <div className="flex space-x-4">
+                                    <div className="w-1/2">
+                                        <div className="mb-2 block">
+                                        <Label htmlFor="textstring" value="Text string (optional)" />
+                                        </div>
+                                        <TextInput id="textstring" type="text" />
+                                    </div>
+                                    <div className="w-1/2">
+                                        <div className="mb-2 block">
+                                        <Label htmlFor="boundingbox" value="Bounding box (optional)" />
+                                        </div>
+                                        <TextInput id="boundingbox" type="text" rightIcon={DrawSquare} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="mb-2 block">
+                                    <Label htmlFor="referenceitem" value="Reference item" />
+                                    </div>
+                                    <TextInput id="referenceitem" type="text" />
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <Button type="submit">Save</Button>
+                                    <Button color="light">Cancel</Button>
+                                </div>
+                                </form>
                             </Table.Cell>
                         </Table.Row>
                     </Table.Body>
