@@ -103,12 +103,6 @@ const ReceiptPage = () => {
                                         <TextInput id="boundingbox" type="text" rightIcon={DrawSquare} />
                                     </div>
                                 </div>
-                                <div>
-                                    <div className="mb-2 block">
-                                    <Label htmlFor="referenceitem" value="Reference item" />
-                                    </div>
-                                    <TextInput id="referenceitem" type="text" />
-                                </div>
                                 <div className="flex flex-wrap gap-2">
                                     <Button type="submit">Save</Button>
                                     <Button color="light">Cancel</Button>
