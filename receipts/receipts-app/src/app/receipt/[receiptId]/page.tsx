@@ -37,6 +37,8 @@ const ReceiptPage = () => {
                 )}
             </div>
             <div className="w-1/2 p-4">
+                <h1 className="text-lg font-medium">Receipt #{receiptId}</h1>
+                <hr className="my-4" />
                 <Table className="table-auto">
                     <Table.Head>
                     <Table.HeadCell>Item</Table.HeadCell>
