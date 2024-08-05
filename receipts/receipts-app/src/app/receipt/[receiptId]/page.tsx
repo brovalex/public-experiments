@@ -8,6 +8,7 @@ import { ReceiptWithRelationships } from '@/types/receipt.d';
 import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
+import ImageComponent from '@/components/ImageComponent';
 
 const ReceiptPage = () => {
     const params = useParams();
@@ -26,17 +27,18 @@ const ReceiptPage = () => {
     
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     const expenses = receipt?.expenses ?? [];
-    
+    // const boxes = ... TODO: implement
+    const boxes = [
+        [[165, 910], [657, 910], [657, 959], [165, 959]],
+        [[163, 1112], [452, 1112], [452, 1156], [163, 1156]]
+    ];
+
     return (
         <div className="flex h-screen">
-            <div className="w-1/2 p-4">
-                {imageUrl ? (
-                    <img src={imageUrl} alt="Receipt" className="max-w-full h-auto" />
-                ) : (
-                    <p>Loading image...</p>
-                )}
+            <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
+                <ImageComponent imageUrl={imageUrl} boxes={boxes} />
             </div>
-            <div className="w-1/2 p-4">
+            <div className="w-1/2 p-4 h-full overflow-y-scroll">
                 <h1 className="text-lg font-medium">Receipt #{receiptId}</h1>
                 <hr className="my-4" />
                 <Table className="table-auto">
@@ -112,7 +114,7 @@ const ReceiptPage = () => {
                         </Table.Row>
                     </Table.Body>
                 </Table>
-                {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
+                <pre>{JSON.stringify(receipt, null, 2)}</pre>
             </div>
         </div>
     )
