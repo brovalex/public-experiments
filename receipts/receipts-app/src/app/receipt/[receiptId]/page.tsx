@@ -118,7 +118,7 @@ const ReceiptPage = () => {
                                     <div className="mb-2 block">
                                     <Label htmlFor="product" value="Product" />
                                     </div>
-                                    <CreatableSelect
+                                    <CreatableSelect 
                                         isClearable
                                         isDisabled={isLoading}
                                         isLoading={isLoading}
