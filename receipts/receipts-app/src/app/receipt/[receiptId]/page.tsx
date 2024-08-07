@@ -31,12 +31,6 @@ const ReceiptPage = () => {
     const expenses = receipt?.expenses ?? [];
     const receiptTexts = receipt?.imageFiles[0]?.receiptText ?? [];
 
-    // const boxes = ... TODO: implement
-    // const boxes = [
-    //     [[165, 910], [657, 910], [657, 959], [165, 959]],
-    //     [[163, 1112], [452, 1112], [452, 1156], [163, 1156]]
-    // ];
-
     const formatCurrency = (value: number): string => {
         return new Intl.NumberFormat('en-US', {
           style: 'currency',

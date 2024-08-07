@@ -1,6 +1,6 @@
 // components/ImageComponent.tsx
 
-import { ReceiptText } from '@prisma/client';
+import { ReceiptTextWithRelationships } from '@/types/receiptText';
 import React, { useRef, useEffect } from 'react';
 
 interface Box {
@@ -9,7 +9,7 @@ interface Box {
 
 interface ImageComponentProps {
     imageUrl: string;
-    receiptTexts: ReceiptText[];
+    receiptTexts: ReceiptTextWithRelationships[];
 }
 
 const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts }) => {
@@ -32,6 +32,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             receiptTexts.forEach(receiptText => {
                 const box = receiptText.boundingBox ? JSON.parse(receiptText.boundingBox) : null;
+                const expense = receiptText.expense;
                 if (!box) return;
                 const [x1, y1] = box[0];
                 const [x2, y2] = box[2];
@@ -41,7 +42,14 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts 
                 const rectHeight = ((y2 - y1) / image.naturalHeight) * canvas.height;
             
                 ctx.lineWidth = 2;
-                ctx.fillStyle = '#FDE047';
+                if (expense) {
+                    // ctx.strokeStyle = '#FDE047';
+                    ctx.fillStyle = '#FDE047';
+                } else {
+                    // ctx.strokeStyle = 'gray';
+                    ctx.fillStyle = 'lightgray';
+                }
+                // ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
                 ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
             });
           }
