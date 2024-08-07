@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Expense as PrismaExpense } from '@prisma/client';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
+import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
@@ -25,14 +26,16 @@ const ReceiptPage = () => {
         }
     }, [receiptId]);
     
+    // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     const expenses = receipt?.expenses ?? [];
+    const receiptTexts = receipt?.imageFiles[0]?.receiptText ?? [];
 
     // const boxes = ... TODO: implement
-    const boxes = [
-        [[165, 910], [657, 910], [657, 959], [165, 959]],
-        [[163, 1112], [452, 1112], [452, 1156], [163, 1156]]
-    ];
+    // const boxes = [
+    //     [[165, 910], [657, 910], [657, 959], [165, 959]],
+    //     [[163, 1112], [452, 1112], [452, 1156], [163, 1156]]
+    // ];
 
     const formatCurrency = (value: number): string => {
         return new Intl.NumberFormat('en-US', {
@@ -52,7 +55,7 @@ const ReceiptPage = () => {
     return (
         <div className="flex h-screen">
             <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
-                <ImageComponent imageUrl={imageUrl} boxes={boxes} />
+                <ImageComponent imageUrl={imageUrl} receiptTexts={receiptTexts} />
             </div>
             <div className="w-1/2 p-4 h-full overflow-y-scroll">
                 <h1 className="text-lg font-medium">Receipt #{receiptId}</h1>

@@ -1,5 +1,6 @@
 // components/ImageComponent.tsx
 
+import { ReceiptText } from '@prisma/client';
 import React, { useRef, useEffect } from 'react';
 
 interface Box {
@@ -8,10 +9,10 @@ interface Box {
 
 interface ImageComponentProps {
     imageUrl: string;
-    boxes: Box[];
+    receiptTexts: ReceiptText[];
 }
 
-const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, boxes }) => {
+const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
 
@@ -29,15 +30,16 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, boxes }) => {
             canvas.width = image.clientWidth;
             canvas.height = image.clientHeight;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            boxes.forEach(box => {
+            receiptTexts.forEach(receiptText => {
+                const box = receiptText.boundingBox ? JSON.parse(receiptText.boundingBox) : null;
+                if (!box) return;
                 const [x1, y1] = box[0];
                 const [x2, y2] = box[2];
                 const rectX = (x1 / image.naturalWidth) * canvas.width;
                 const rectY = (y1 / image.naturalHeight) * canvas.height;
                 const rectWidth = ((x2 - x1) / image.naturalWidth) * canvas.width;
                 const rectHeight = ((y2 - y1) / image.naturalHeight) * canvas.height;
-
+            
                 ctx.lineWidth = 2;
                 ctx.fillStyle = '#FDE047';
                 ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
@@ -55,7 +57,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, boxes }) => {
         return () => {
           window.removeEventListener('resize', handleResize);
         };
-      }, [boxes]);
+      }, [receiptTexts]);
 
     return (
         <div className="w-full max-w-[540px] mx-auto">
