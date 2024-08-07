@@ -56,7 +56,7 @@ model ImageFile {                                         // as opposed to RawIm
 
   receiptId       Int?
   receipt         Receipt?     @relation(fields: [receiptId], references: [id])
-  receiptText     ReceiptText[]
+  receiptTexts     ReceiptText[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt   
