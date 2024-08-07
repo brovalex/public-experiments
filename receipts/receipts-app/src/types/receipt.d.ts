@@ -1,6 +1,6 @@
-import { ImageFile, Expense, Receipt as PrismaReceipt } from '@prisma/client';
+import { ImageFileWithRelationships, Expense, Receipt as PrismaReceipt } from '@prisma/client';
 
 export interface ReceiptWithRelationships extends PrismaReceipt {
-  imageFiles: ImageFile[];
+  imageFiles: ImageFileWithRelationships[];
   expenses: Expense[];
 }

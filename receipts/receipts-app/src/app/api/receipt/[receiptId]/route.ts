@@ -8,17 +8,29 @@ const prisma = new PrismaClient();
 export async function GET(req: NextRequest, { params }: { params: { receiptId: string } }) {
   try {
     const { receiptId } = params;
-    console.log(receiptId)
+    // console.log(receiptId)
     const receipt = await prisma.receipt.findUnique({
       where: { id: Number(receiptId) },
       include: { 
         expenses: {
-            include: { 
-                referenceItem: true,
-                receiptText: true,
-            },
+          include: { 
+          referenceItem: true,
+          },
         }, 
-        imageFiles: true },
+        imageFiles: {
+          include: {
+          receiptText: {
+            include: {
+              expense: {
+                select: { 
+                  id: true
+                  },
+              },
+            },
+          },
+          },
+        },
+      },
     });
     return NextResponse.json(receipt);
   } catch (error) {
