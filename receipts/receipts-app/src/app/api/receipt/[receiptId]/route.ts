@@ -13,12 +13,24 @@ export async function GET(req: NextRequest, { params }: { params: { receiptId: s
       where: { id: Number(receiptId) },
       include: { 
         expenses: {
-            include: { 
-                referenceItem: true,
-                receiptText: true,
-            },
+          include: { 
+          referenceItem: true,
+          },
         }, 
-        imageFiles: true },
+        imageFiles: {
+          include: {
+          receiptText: {
+            include: {
+              expense: {
+                select: { 
+                  id: true
+                  },
+              },
+            },
+          },
+          },
+        },
+      },
     });
     return NextResponse.json(receipt);
   } catch (error) {
