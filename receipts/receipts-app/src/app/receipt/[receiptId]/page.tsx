@@ -29,7 +29,7 @@ const ReceiptPage = () => {
     // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     const expenses = receipt?.expenses ?? [];
-    const receiptTexts = receipt?.imageFiles[0]?.receiptText ?? [];
+    const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
 
     const formatCurrency = (value: number): string => {
         return new Intl.NumberFormat('en-US', {
@@ -68,8 +68,8 @@ const ReceiptPage = () => {
                             {expenses.map((expense: PrismaExpense) => (
                                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={expense.id}>
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                        <span>Product name not implement yet</span>
-                                        <p className="font-normal text-xs text-slate-400">{expense.referenceItem.name}</p>
+                                        <span>{expense.product.name}</span>
+                                        <p className="font-normal text-xs text-slate-400">{expense.product.referenceItem.name}</p>
                                     </Table.Cell>
                                     <Table.Cell className="text-right">{expense.quantity} ×</Table.Cell>
                                     <Table.Cell className="text-right">

@@ -14,12 +14,16 @@ export async function GET(req: NextRequest, { params }: { params: { receiptId: s
       include: { 
         expenses: {
           include: { 
-          referenceItem: true,
+            product: {
+              include: {
+              referenceItem: true
+              }
+            },
           },
         }, 
         imageFiles: {
           include: {
-          receiptText: {
+          receiptTexts: {
             include: {
               expense: {
                 select: { 
