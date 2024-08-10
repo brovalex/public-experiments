@@ -42,3 +42,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to create reference item '+error }, { status: 500 });
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    const products: PrismaReceiptText[] = await prisma.product.findMany();
+
+    return NextResponse.json(products);
+  } catch (error) {
+    return NextResponse.json({ message: 'Error fetching products' }, { status: 500 });
+  }
+}

@@ -10,29 +10,51 @@ import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
 import CreatableSelect from 'react-select/creatable';
+import { StylesConfig } from 'react-select';
+import ImageComponent from '@/components/ImageComponent';
 
 interface Option {
     readonly label: string;
     readonly value: string;
 }
-  
-const createOption = (label: string) => ({
+
+const createOption = (label: string, id: number) => ({
     label,
-    value: label.toLowerCase().replace(/\W/g, ''),
+    value: id,
 });
 
-const defaultOptions = [
-    createOption('Schar hamburger buns (4 count)'),
-    createOption('Schar hot dog buns (4 count)'),
-    createOption('Three'),
-];
-import ImageComponent from '@/components/ImageComponent';
+// const defaultOptions = [
+//     createOption('Schar hamburger buns (4 count)'),
+//     createOption('Schar hot dog buns (4 count)'),
+//     createOption('Three'),
+// ];
 
 const ReceiptPage = () => {
     const params = useParams();
     const receiptId = params.receiptId;
 
     const [receipt, setReceipt] = useState<ReceiptWithRelationships | null>(null);
+    
+    // TODO: only assuming using a single image for now, add support for multiple images later
+    const imageUrl = receipt?.imageFiles[0]?.url ?? '';
+    const expenses = receipt?.expenses ?? [];
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [options, setOptions] = useState<Option | null>();
+    const [value, setValue] = useState<Option | null>();
+    
+    const customStyles: StylesConfig = {
+        control: (provided, state) => ({
+          ...provided,
+          padding: '0.25rem',
+          borderRadius: '0.375rem', // rounded-md
+          backgroundColor: 'rgb(249, 250, 251)',
+        }),
+        input: (provided, state) => ({
+            ...provided,
+            boxShadow: 'none',
+        }),
+      };
 
     useEffect(() => {
         if (receiptId) {
@@ -42,14 +64,18 @@ const ReceiptPage = () => {
                 .catch((error) => console.error('Error fetching receipt:', error));
         }
     }, [receiptId]);
-    
-    // TODO: only assuming using a single image for now, add support for multiple images later
-    const imageUrl = receipt?.imageFiles[0]?.url ?? '';
-    const expenses = receipt?.expenses ?? [];
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [options, setOptions] = useState(defaultOptions);
-    const [value, setValue] = useState<Option | null>();
+    useEffect(() => {
+        fetch('/api/product')
+            .then((res) => res.json())
+            .then((data) => {
+                const options = data.map((product: any) => createOption(product.name + ' (' + product.weight + ' ' + product.unitOfMeasure + ')', product.id));
+                console.log(data);
+                setOptions(options);
+            })
+            .catch((error) => console.error('Error fetching products:', error));
+    }, []);
+    
   
     const handleCreateProduct = (inputValue: string) => {
       setIsLoading(true);
@@ -105,7 +131,7 @@ const ReceiptPage = () => {
                                     </Table.Cell>
                                     <Table.Cell className="text-right">{expense.quantity} ×</Table.Cell>
                                     <Table.Cell className="text-right">
-                                        <CurrencyDisplay amount={expense.priceEach} />
+                                        <CurrencyDisplay amount={expense.priceEach.toFixed(2)} />
                                     </Table.Cell>
                                     <Table.Cell>
                                         <div className="flex gap-1">
@@ -144,20 +170,27 @@ const ReceiptPage = () => {
                                         onCreateOption={handleCreateProduct}
                                         options={options}
                                         value={value}
+                                        styles={customStyles}
                                     />
                                 </div>
                                 <div className="flex space-x-4">
-                                    <div className="w-1/2">
+                                    <div className="w-1/3">
                                         <div className="mb-2 block">
-                                        <Label htmlFor="textstring" value="Text string (optional)" />
+                                        <Label htmlFor="price" value="Price" />
                                         </div>
-                                        <TextInput id="textstring" type="text" />
+                                        <TextInput id="price" type="number" addon="$" />
                                     </div>
-                                    <div className="w-1/2">
+                                    <div className="w-1/3">
                                         <div className="mb-2 block">
-                                        <Label htmlFor="boundingbox" value="Bounding box (optional)" />
+                                        <Label htmlFor="quantity" value="Quantity" />
                                         </div>
-                                        <TextInput id="boundingbox" type="text" rightIcon={DrawSquare} />
+                                        <TextInput id="quantity" type="number" value="1" />
+                                    </div>
+                                    <div className="w-1/3">
+                                        <div className="mb-2 block">
+                                        <Label htmlFor="boundingbox" value="Bounding box id (optional)" />
+                                        </div>
+                                        <TextInput id="boundingboxid" type="number" rightIcon={DrawSquare} />
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
