@@ -29,12 +29,27 @@ model Expense {
   receipt         Receipt       @relation(fields: [receiptId], references: [id])
   receiptTextId   Int?           @unique
   receiptText     ReceiptText?   @relation(fields: [receiptTextId], references: [id])
-  referenceItemId Int
-  referenceItem   ReferenceItem @relation(fields: [referenceItemId], references: [id])
+  productId       Int?
+  product         Product?   @relation(fields: [productId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Product {
+  id              Int       @id @default(autoincrement())
+  name            String
+  weight          Float
+  unitOfMeasure   String
+  referenceItemId Int
+  referenceItem   ReferenceItem @relation(fields: [referenceItemId], references: [id])
+
+  expenses        Expense[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 model ReceiptText {
   id              Int     @id @default(autoincrement())
@@ -56,7 +71,7 @@ model ImageFile {                                         // as opposed to RawIm
 
   receiptId       Int?
   receipt         Receipt?     @relation(fields: [receiptId], references: [id])
-  receiptText     ReceiptText[]
+  receiptTexts     ReceiptText[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt   
@@ -72,7 +87,8 @@ model ReferenceItem {
   pricePerWeight  Float
   referenceUrl    String?
 
+  products         Product[]
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Expense   Expense[]
 }

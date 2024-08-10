@@ -23,7 +23,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { priceEach, quantity, receiptId, receiptTextId, referenceItemId } = await req.json();
+    const { priceEach, quantity, receiptId, receiptTextId, productId } = await req.json();
 
     // Create a new Expense
     const newExpense = await prisma.expense.create({
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         "quantity": quantity,
         "receipt": { connect: { id: receiptId } },
         "receiptText": { connect: { id: receiptTextId } },
-        "referenceItem": { connect: { id: referenceItemId } },
+        "product": { connect: { id: productId } },
       }
     });
     return NextResponse.json(newExpense, { status: 201 });

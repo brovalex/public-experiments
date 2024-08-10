@@ -5,9 +5,11 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Expense as PrismaExpense } from '@prisma/client';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
+import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
+<<<<<<< HEAD
 import CreatableSelect from 'react-select/creatable';
 
 interface Option {
@@ -25,6 +27,9 @@ const defaultOptions = [
     createOption('Schar hot dog buns (4 count)'),
     createOption('Three'),
 ];
+=======
+import ImageComponent from '@/components/ImageComponent';
+>>>>>>> main
 
 const ReceiptPage = () => {
     const params = useParams();
@@ -41,6 +46,7 @@ const ReceiptPage = () => {
         }
     }, [receiptId]);
     
+    // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     const expenses = receipt?.expenses ?? [];
 
@@ -58,23 +64,36 @@ const ReceiptPage = () => {
       }, 1000);
     };
     
+    const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
+
+    const formatCurrency = (value: number): string => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(value);
+    };
+
+    interface CurrencyDisplayProps {
+        amount: number;
+    }
+
+    const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({ amount }) => {
+        return <div>{formatCurrency(amount)}</div>;
+    };
+
     return (
         <div className="flex h-screen">
-            <div className="w-1/2 p-4">
-                {imageUrl ? (
-                    <img src={imageUrl} alt="Receipt" className="max-w-full h-auto" />
-                ) : (
-                    <p>Loading image...</p>
-                )}
+            <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
+                <ImageComponent imageUrl={imageUrl} receiptTexts={receiptTexts} />
             </div>
-            <div className="w-1/2 p-4">
+            <div className="w-1/2 p-4 h-full overflow-y-scroll">
                 <h1 className="text-lg font-medium">Receipt #{receiptId}</h1>
                 <hr className="my-4" />
                 <Table className="table-auto">
                     <Table.Head>
                     <Table.HeadCell>Item</Table.HeadCell>
-                    <Table.HeadCell>Quantity</Table.HeadCell>
-                    <Table.HeadCell>Price Each</Table.HeadCell>
+                    <Table.HeadCell className="text-right">Quantity</Table.HeadCell>
+                    <Table.HeadCell className="text-right">Price Each</Table.HeadCell>
                     <Table.HeadCell>
                         <span className="sr-only">Edit</span>
                     </Table.HeadCell>
@@ -84,11 +103,13 @@ const ReceiptPage = () => {
                             {expenses.map((expense: PrismaExpense) => (
                                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={expense.id}>
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                        <span>Product name not implement yet</span>
-                                        <p className="font-normal text-xs text-slate-400">{expense.referenceItem.name}</p>
+                                        <span>{expense.product.name}</span>
+                                        <p className="font-normal text-xs text-slate-400">{expense.product.referenceItem.name}</p>
                                     </Table.Cell>
-                                    <Table.Cell>{expense.quantity} ×</Table.Cell>
-                                    <Table.Cell>{expense.priceEach}</Table.Cell>
+                                    <Table.Cell className="text-right">{expense.quantity} ×</Table.Cell>
+                                    <Table.Cell className="text-right">
+                                        <CurrencyDisplay amount={expense.priceEach} />
+                                    </Table.Cell>
                                     <Table.Cell>
                                         <div className="flex gap-1">
                                             <Pen className="w-5 h-5 text-cyan-600" />
