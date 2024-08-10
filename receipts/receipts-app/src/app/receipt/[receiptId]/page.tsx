@@ -9,7 +9,6 @@ import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
-<<<<<<< HEAD
 import CreatableSelect from 'react-select/creatable';
 
 interface Option {
@@ -27,9 +26,7 @@ const defaultOptions = [
     createOption('Schar hot dog buns (4 count)'),
     createOption('Three'),
 ];
-=======
 import ImageComponent from '@/components/ImageComponent';
->>>>>>> main
 
 const ReceiptPage = () => {
     const params = useParams();
