@@ -4,17 +4,20 @@ import { ReceiptTextWithRelationships } from '@/types/receiptText';
 import React, { useRef, useEffect } from 'react';
 
 interface Box {
+    receiptTextId: number;
     coordinates: [number, number][];
 }
 
 interface ImageComponentProps {
     imageUrl: string;
     receiptTexts: ReceiptTextWithRelationships[];
+    onReceiptTextClick: (id: number) => void;
 }
 
-const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts }) => {
+const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts, onReceiptTextClick }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
+    const [box, setBoxes] = useState<Box[]>([]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -66,6 +69,24 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts 
           window.removeEventListener('resize', handleResize);
         };
       }, [receiptTexts]);
+    
+    const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+        const canvas = canvasRef.current;
+        if (canvas) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const clickedRect = receiptTexts.find(
+                // TODO
+            // rect => x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height
+            );
+
+            if (clickedRect) {
+                onReceiptTextClick(clickedRect.id);
+            }
+        }
+    };
 
     return (
         <div className="w-full max-w-[540px] mx-auto">

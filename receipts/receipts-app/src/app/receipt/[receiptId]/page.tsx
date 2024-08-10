@@ -70,7 +70,6 @@ const ReceiptPage = () => {
             .then((res) => res.json())
             .then((data) => {
                 const options = data.map((product: any) => createOption(product.name + ' (' + product.weight + ' ' + product.unitOfMeasure + ')', product.id));
-                console.log(data);
                 setOptions(options);
             })
             .catch((error) => console.error('Error fetching products:', error));
