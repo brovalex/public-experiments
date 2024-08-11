@@ -34,6 +34,7 @@ const ReceiptPage = () => {
     const receiptId = params.receiptId;
 
     const [receipt, setReceipt] = useState<ReceiptWithRelationships | null>(null);
+    const [selectedReceiptTextId, setSelectedReceiptTextId] = useState<number | null>(null);
     
     // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
@@ -103,10 +104,21 @@ const ReceiptPage = () => {
         return <div>{formatCurrency(amount)}</div>;
     };
 
+    const handleRectangleClick = (id: number) => {
+        setSelectedReceiptTextId(id);
+        if (id) {
+            document.getElementById('product')?.focus();
+        }
+      };
+
     return (
         <div className="flex h-screen">
             <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
-                <ImageComponent imageUrl={imageUrl} receiptTexts={receiptTexts} />
+                <ImageComponent 
+                    imageUrl={imageUrl} 
+                    receiptTexts={receiptTexts} 
+                    onReceiptTextClick={handleRectangleClick}
+                    />
             </div>
             <div className="w-1/2 p-4 h-full overflow-y-scroll">
                 <h1 className="text-lg font-medium">Receipt #{receiptId}</h1>
@@ -162,6 +174,7 @@ const ReceiptPage = () => {
                                     <Label htmlFor="product" value="Product" />
                                     </div>
                                     <CreatableSelect 
+                                        inputId="product"
                                         isClearable
                                         isDisabled={isLoading}
                                         isLoading={isLoading}
@@ -187,14 +200,14 @@ const ReceiptPage = () => {
                                     </div>
                                     <div className="w-1/3">
                                         <div className="mb-2 block">
-                                        <Label htmlFor="boundingbox" value="Bounding box id (optional)" />
+                                        <Label htmlFor="boundingbox" value="Bounding box id" />
                                         </div>
-                                        <TextInput id="boundingboxid" type="number" rightIcon={DrawSquare} />
+                                        <TextInput id="boundingboxid" type="number" rightIcon={DrawSquare} value={selectedReceiptTextId ?? ''} disabled />
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     <Button type="submit">Save</Button>
-                                    <Button color="light">Cancel</Button>
+                                    <Button color="light">Clear</Button>
                                 </div>
                                 </form>
                             </Table.Cell>
