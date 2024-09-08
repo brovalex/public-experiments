@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ExpenseWithRelationships } from '@/types/expense.d';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
+import { ReceiptText } from '@prisma/client';
 import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
@@ -12,7 +13,7 @@ import { DrawSquare, Pen } from "flowbite-react-icons/outline";
 import CreatableSelect from 'react-select/creatable';
 import { StylesConfig } from 'react-select';
 import ImageComponent from '@/components/ImageComponent';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, set } from 'react-hook-form';
 
 interface Option {
     readonly label: string;
@@ -35,8 +36,11 @@ const ReceiptPage = () => {
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     // const expenses = receipt?.expenses ?? [];
     const [expenses, setExpenses] = useState<ExpenseWithRelationships[]>([]);
+    // const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
+    const [receiptTexts, setReceiptTexts] = useState<ReceiptText[]>([]);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<ExpenseFormInputs>();
+
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
 
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option | null>();
@@ -62,6 +66,7 @@ const ReceiptPage = () => {
                 .then((receipt) => {
                     setReceipt(receipt);
                     setExpenses(receipt.expenses);
+                    setReceiptTexts(receipt.imageFiles[0]?.receiptTexts ?? []);
                 })
                 .catch((error) => console.error('Error fetching receipt:', error));
         }
@@ -86,9 +91,7 @@ const ReceiptPage = () => {
             setValue(newOption);
         }, 1000);
     };
-    
-    const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
-    
+        
     const formatCurrency = (value: number): string => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -147,6 +150,16 @@ const ReceiptPage = () => {
             
             console.log('Expense created:', newExpense);
             setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+            setReceiptTexts((prevReceiptTexts) => prevReceiptTexts.map((receiptText) => {
+                if (receiptText.id === selectedReceiptTextId) {
+                    return { ...receiptText, expense: newExpense };
+                }
+                return receiptText;
+            }
+            ));
+            setSelectedReceiptTextId(null);
+            setValue(null);
+            reset();
         } catch (error) {
             console.error('Error:', error);
         }
