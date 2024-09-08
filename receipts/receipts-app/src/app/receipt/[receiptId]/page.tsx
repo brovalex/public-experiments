@@ -12,6 +12,14 @@ import { DrawSquare, Pen } from "flowbite-react-icons/outline";
 import CreatableSelect from 'react-select/creatable';
 import { StylesConfig } from 'react-select';
 import ImageComponent from '@/components/ImageComponent';
+import { useForm, SubmitHandler } from 'react-hook-form';
+
+type ExpenseFormInputs = {
+    productId: string;
+    price: number;
+    quantity: number;
+    boundingBoxId: number | null;
+  };
 
 interface Option {
     readonly label: string;
@@ -23,12 +31,6 @@ const createOption = (label: string, id: number) => ({
     value: id,
 });
 
-// const defaultOptions = [
-//     createOption('Schar hamburger buns (4 count)'),
-//     createOption('Schar hot dog buns (4 count)'),
-//     createOption('Three'),
-// ];
-
 const ReceiptPage = () => {
     const params = useParams();
     const receiptId = params.receiptId;
@@ -39,6 +41,8 @@ const ReceiptPage = () => {
     // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
     const expenses = receipt?.expenses ?? [];
+
+    const { register, handleSubmit, formState: { errors } } = useForm<ExpenseFormInputs>();
 
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option | null>();
@@ -111,6 +115,27 @@ const ReceiptPage = () => {
         }
       };
 
+    const onSubmit: SubmitHandler<ExpenseFormInputs> = async (data) => {
+        try {
+            const response = await fetch('/api/expense', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit the form');
+            }
+
+            const result = await response.json();
+            console.log('Success:', result);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     return (
         <div className="flex h-screen">
             <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
@@ -167,8 +192,8 @@ const ReceiptPage = () => {
                     <Table.Body className="divide-y border-t">
                         <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                             <Table.Cell colSpan={4}>
-                                <form className="flex w-full flex-col gap-4">
-                                <h2 className="text-base font-semibold text-gray-900">Add item</h2>
+                                <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+                                <h2 className="text-base font-semibold text-gray-900">Add expense</h2>
                                 <div>
                                     <div className="mb-2 block">
                                     <Label htmlFor="product" value="Product" />
@@ -190,13 +215,26 @@ const ReceiptPage = () => {
                                         <div className="mb-2 block">
                                         <Label htmlFor="price" value="Price" />
                                         </div>
-                                        <TextInput id="price" type="number" addon="$" />
+                                        <TextInput 
+                                            id="price" 
+                                            {...register('price', { required: true })}
+                                            type="number" 
+                                            addon="$" 
+                                            step="0.01"
+                                        />
+                                        {errors.price && <span>This field is required</span>}
                                     </div>
                                     <div className="w-1/3">
                                         <div className="mb-2 block">
                                         <Label htmlFor="quantity" value="Quantity" />
                                         </div>
-                                        <TextInput id="quantity" type="number" value="1" />
+                                        <TextInput 
+                                            id="quantity" 
+                                            {...register('quantity', { required: true })}
+                                            type="number" 
+                                            value="1"
+                                        />
+                                        {errors.quantity && <span>This field is required</span>}
                                     </div>
                                     <div className="w-1/3">
                                         <div className="mb-2 block">
@@ -214,7 +252,7 @@ const ReceiptPage = () => {
                         </Table.Row>
                     </Table.Body>
                 </Table>
-                {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
+                <pre>{JSON.stringify(receipt, null, 2)}</pre>
             </div>
         </div>
     )
