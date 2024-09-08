@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Expense as PrismaExpense } from '@prisma/client';
+import { ExpenseWithRelationShips } from '@/types/expense.d';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
 import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
@@ -80,41 +80,40 @@ const ReceiptPage = () => {
             .catch((error) => console.error('Error fetching products:', error));
     }, []);
     
-  
     const handleCreateProduct = (inputValue: string) => {
-      setIsLoading(true);
-      setTimeout(() => {
-        const newOption = createOption(inputValue);
-        setIsLoading(false);
-        setOptions((prev) => [...prev, newOption]);
-        setValue(newOption);
-      }, 1000);
+        setIsLoading(true);
+        setTimeout(() => {
+            const newOption = createOption(inputValue);
+            setIsLoading(false);
+            setOptions((prev) => [...prev, newOption]);
+            setValue(newOption);
+        }, 1000);
     };
     
     const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
-
+    
     const formatCurrency = (value: number): string => {
         return new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
+            style: 'currency',
+            currency: 'USD',
         }).format(value);
     };
-
+    
     interface CurrencyDisplayProps {
         amount: number;
     }
-
+    
     const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({ amount }) => {
         return <div>{formatCurrency(amount)}</div>;
     };
-
+    
     const handleRectangleClick = (id: number) => {
         setSelectedReceiptTextId(id);
         if (id) {
             document.getElementById('product')?.focus();
         }
-      };
-
+    };
+    
     const onSubmit: SubmitHandler<ExpenseFormInputs> = async (data) => {
         try {
             const response = await fetch('/api/expense', {
@@ -124,18 +123,18 @@ const ReceiptPage = () => {
                 },
                 body: JSON.stringify(data),
             });
-
+            
             if (!response.ok) {
                 throw new Error('Failed to submit the form');
             }
-
+            
             const result = await response.json();
             console.log('Success:', result);
         } catch (error) {
             console.error('Error:', error);
         }
     };
-
+    
     return (
         <div className="flex h-screen">
             <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
@@ -159,7 +158,7 @@ const ReceiptPage = () => {
                     </Table.Head>
                     {expenses.length > 0 ? (
                         <Table.Body className="divide-y">
-                            {expenses.map((expense: PrismaExpense) => (
+                            {expenses.map((expense) => (
                                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={expense.id}>
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                         <span>{expense.product.name}</span>
@@ -252,7 +251,7 @@ const ReceiptPage = () => {
                         </Table.Row>
                     </Table.Body>
                 </Table>
-                <pre>{JSON.stringify(receipt, null, 2)}</pre>
+                {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
             </div>
         </div>
     )
