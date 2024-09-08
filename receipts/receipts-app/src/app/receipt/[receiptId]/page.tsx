@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { ExpenseWithRelationShips } from '@/types/expense.d';
+import { ExpenseWithRelationships } from '@/types/expense.d';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
 import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
@@ -33,7 +33,8 @@ const ReceiptPage = () => {
     
     // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
-    const expenses = receipt?.expenses ?? [];
+    // const expenses = receipt?.expenses ?? [];
+    const [expenses, setExpenses] = useState<ExpenseWithRelationships[]>([]);
 
     const { register, handleSubmit, formState: { errors } } = useForm<ExpenseFormInputs>();
 
@@ -58,7 +59,10 @@ const ReceiptPage = () => {
         if (receiptId) {
             fetch(`/api/receipt/${receiptId}`)
                 .then((res) => res.json())
-                .then((receipt) => setReceipt(receipt))
+                .then((receipt) => {
+                    setReceipt(receipt);
+                    setExpenses(receipt.expenses);
+                })
                 .catch((error) => console.error('Error fetching receipt:', error));
         }
     }, [receiptId]);
@@ -139,8 +143,10 @@ const ReceiptPage = () => {
                 throw new Error('Failed to submit the form');
             }
             
-            const result = await response.json();
-            console.log('Success:', result);
+            const newExpense = await response.json();
+            
+            console.log('Expense created:', newExpense);
+            setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
         } catch (error) {
             console.error('Error:', error);
         }

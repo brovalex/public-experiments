@@ -33,8 +33,23 @@ export async function POST(req: NextRequest) {
         "receipt": { connect: { id: receiptId } },
         "receiptText": { connect: { id: receiptTextId } },
         "product": { connect: { id: productId } },
-      }
+      },
+      include: {
+        product: true,
+      },
     });
+
+    // Fetch the reference item for productId
+    if (newExpense && newExpense.product) {
+      const referenceItem = await prisma.referenceItem.findUnique({
+        where: { id: newExpense.product.id },
+      });
+    
+      if (referenceItem) {
+        newExpense.product.referenceItem = referenceItem;
+      }
+    }
+
     return NextResponse.json(newExpense, { status: 201 });
   } catch (error) {
     console.error('Error creating receipt text:', error);

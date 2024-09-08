@@ -1,5 +1,5 @@
 import { Product, Expense as PrismaExpense } from '@prisma/client';
 
-export interface ExpenseWithRelationShips extends PrismaExpense {
+export interface ExpenseWithRelationships extends PrismaExpense {
   product: Product?;
 }
