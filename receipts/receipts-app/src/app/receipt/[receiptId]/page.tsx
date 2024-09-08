@@ -14,13 +14,6 @@ import { StylesConfig } from 'react-select';
 import ImageComponent from '@/components/ImageComponent';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-type ExpenseFormInputs = {
-    productId: string;
-    price: number;
-    quantity: number;
-    boundingBoxId: number | null;
-  };
-
 interface Option {
     readonly label: string;
     readonly value: string;
@@ -113,15 +106,33 @@ const ReceiptPage = () => {
             document.getElementById('product')?.focus();
         }
     };
-    
+
+    interface ExpenseFormInputs {
+        priceEach: string; // will be converted to a float
+        quantity: string;  // will be converted to a float
+        receiptId: string;
+        receiptTextId: string | null;
+        productId: string | null;
+    }
+      
     const onSubmit: SubmitHandler<ExpenseFormInputs> = async (data) => {
+
+        // DEBUG
+        console.log(data);
+
         try {
             const response = await fetch('/api/expense', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                    priceEach: parseFloat(data.priceEach), // Convert to Float
+                    quantity:  parseFloat(data.quantity), // Convert to Int
+                    receiptId: parseInt(Array.isArray(receiptId) ? receiptId[0] : receiptId, 10),
+                    receiptTextId: selectedReceiptTextId ? selectedReceiptTextId : null,
+                    productId: 1, // TODO: implement later
+                }),
             });
             
             if (!response.ok) {
@@ -212,16 +223,15 @@ const ReceiptPage = () => {
                                 <div className="flex space-x-4">
                                     <div className="w-1/3">
                                         <div className="mb-2 block">
-                                        <Label htmlFor="price" value="Price" />
+                                        <Label htmlFor="priceEach" value="Price" />
                                         </div>
                                         <TextInput 
-                                            id="price" 
-                                            {...register('price', { required: true })}
+                                            id="priceEach" 
+                                            {...register('priceEach', { required: true })}
                                             type="number" 
-                                            addon="$" 
-                                            step="0.01"
+                                            step={0.01}
                                         />
-                                        {errors.price && <span>This field is required</span>}
+                                        {errors.priceEach && <span>This field is required</span>}
                                     </div>
                                     <div className="w-1/3">
                                         <div className="mb-2 block">
@@ -231,15 +241,21 @@ const ReceiptPage = () => {
                                             id="quantity" 
                                             {...register('quantity', { required: true })}
                                             type="number" 
-                                            value="1"
+                                            value={1}
                                         />
                                         {errors.quantity && <span>This field is required</span>}
                                     </div>
                                     <div className="w-1/3">
                                         <div className="mb-2 block">
-                                        <Label htmlFor="boundingbox" value="Bounding box id" />
+                                        <Label htmlFor="receiptTextId" value="Bounding box id" />
                                         </div>
-                                        <TextInput id="boundingboxid" type="number" rightIcon={DrawSquare} value={selectedReceiptTextId ?? ''} disabled />
+                                        <TextInput 
+                                            id="receiptTextId" 
+                                            {...register('receiptTextId', { required: false })}
+                                            type="number" 
+                                            rightIcon={DrawSquare} 
+                                            value={selectedReceiptTextId ?? ''} disabled 
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
