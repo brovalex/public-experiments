@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     // Fetch the reference item for productId
     if (newExpense && newExpense.product) {
       const referenceItem = await prisma.referenceItem.findUnique({
-        where: { id: newExpense.product.id },
+        where: { id: newExpense.product.referenceItemId },
       });
     
       if (referenceItem) {
