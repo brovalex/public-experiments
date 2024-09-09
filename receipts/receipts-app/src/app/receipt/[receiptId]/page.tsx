@@ -13,7 +13,7 @@ import { DrawSquare, Pen } from "flowbite-react-icons/outline";
 import CreatableSelect from 'react-select/creatable';
 import { StylesConfig } from 'react-select';
 import ImageComponent from '@/components/ImageComponent';
-import { useForm, SubmitHandler, set } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller, set } from 'react-hook-form';
 
 interface Option {
     readonly label: string;
@@ -40,11 +40,11 @@ const ReceiptPage = () => {
     const [receiptTexts, setReceiptTexts] = useState<ReceiptText[]>([]);
 
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
+    const { register, control, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
 
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option | null>();
-    const [value, setValue] = useState<Option | null>();
+    const [product, setProduct] = useState<Option | unknown>();
     
     const customStyles: StylesConfig = {
         control: (provided, state) => ({
@@ -85,10 +85,11 @@ const ReceiptPage = () => {
     const handleCreateProduct = (inputValue: string) => {
         setIsLoading(true);
         setTimeout(() => {
-            const newOption = createOption(inputValue);
+            // TODO: temporary, should be replaced with a POST request to create a new product
+            const newOption = createOption(inputValue, 0);
             setIsLoading(false);
             setOptions((prev) => [...prev, newOption]);
-            setValue(newOption);
+            setProduct(newOption);
         }, 1000);
     };
         
@@ -124,9 +125,6 @@ const ReceiptPage = () => {
       
     const onSubmit: SubmitHandler<ExpenseFormInputs> = async (data) => {
 
-        // DEBUG
-        console.log(data);
-
         try {
             const response = await fetch('/api/expense', {
                 method: 'POST',
@@ -138,7 +136,7 @@ const ReceiptPage = () => {
                     quantity:  parseFloat(data.quantity), // Convert to Int
                     receiptId: parseInt(Array.isArray(receiptId) ? receiptId[0] : receiptId, 10),
                     receiptTextId: selectedReceiptTextId ? selectedReceiptTextId : null,
-                    productId: 1, // TODO: implement later
+                    productId: product ? parseInt(product.value) : null, // Convert to Int if not null
                 }),
             });
             
@@ -148,7 +146,6 @@ const ReceiptPage = () => {
             
             const newExpense = await response.json();
             
-            console.log('Expense created:', newExpense);
             setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
             setReceiptTexts((prevReceiptTexts) => prevReceiptTexts.map((receiptText) => {
                 if (receiptText.id === selectedReceiptTextId) {
@@ -158,7 +155,7 @@ const ReceiptPage = () => {
             }
             ));
             setSelectedReceiptTextId(null);
-            setValue(null);
+            setProduct(null);
             reset();
         } catch (error) {
             console.error('Error:', error);
@@ -227,16 +224,21 @@ const ReceiptPage = () => {
                                     <div className="mb-2 block">
                                     <Label htmlFor="product" value="Product" />
                                     </div>
-                                    <CreatableSelect 
-                                        inputId="product"
-                                        isClearable
-                                        isDisabled={isLoading}
-                                        isLoading={isLoading}
-                                        onChange={(newValue) => setValue(newValue)}
-                                        onCreateOption={handleCreateProduct}
-                                        options={options}
-                                        value={value}
-                                        styles={customStyles}
+                                    <Controller 
+                                        name="productId" 
+                                        control={control}
+                                        render={({ field }) => <CreatableSelect 
+                                            {...field}
+                                            inputId="product"
+                                            isClearable
+                                            isDisabled={isLoading}
+                                            isLoading={isLoading}
+                                            onChange={(newValue) => setProduct(newValue)}
+                                            onCreateOption={handleCreateProduct}
+                                            options={options}
+                                            value={product}
+                                            styles={customStyles}
+                                        />}
                                     />
                                 </div>
                                 <div className="flex space-x-4">
