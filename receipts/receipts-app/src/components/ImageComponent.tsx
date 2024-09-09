@@ -2,6 +2,7 @@
 
 import { ReceiptTextWithRelationships } from '@/types/receiptText';
 import React, { useRef, useEffect, useState } from 'react';
+import { set } from 'react-hook-form';
 
 interface BoundingBox {
     receiptTextId: number;
@@ -28,6 +29,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const [rectangles, setRectangles] = useState<Rectangle[]>([]);
+    const [activeRectangleId, setActiveRectangleId] = useState<number | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -90,7 +92,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
                     // ctx.strokeStyle = 'gray';
                     ctx.fillStyle = 'lightgray';
                 }
-                if(rectangle.selected) {
+                if(rectangle.receiptTextId === activeRectangleId) {
                     ctx.fillStyle = '#9EFF00';
                 }
                 // ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
@@ -127,15 +129,16 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
                 });
             });
             if (clickedRect) {
-                setRectangles(prevRectangles => {
-                    return prevRectangles.map(rectangle => {
-                        if (rectangle.receiptTextId === clickedRect.receiptTextId) {
-                            return { ...rectangle, selected: true };
-                        } else {
-                            return rectangle;
-                        }
-                    });
-                });
+                setActiveRectangleId(clickedRect.receiptTextId);
+                // setRectangles(prevRectangles => {
+                //     return prevRectangles.map(rectangle => {
+                //         if (rectangle.receiptTextId === clickedRect.receiptTextId) {
+                //             return { ...rectangle, selected: true };
+                //         } else {
+                //             return rectangle;
+                //         }
+                //     });
+                // });
                 onReceiptTextClick(clickedRect.receiptTextId);
             } else {
                 onReceiptTextClick(null);

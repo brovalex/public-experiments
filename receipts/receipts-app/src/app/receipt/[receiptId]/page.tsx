@@ -70,7 +70,7 @@ const ReceiptPage = () => {
                 })
                 .catch((error) => console.error('Error fetching receipt:', error));
         }
-    }, [receiptId]);
+    }, [receipt]);
 
     useEffect(() => {
         fetch('/api/product')
@@ -230,6 +230,7 @@ const ReceiptPage = () => {
                                         render={({ field }) => <CreatableSelect 
                                             {...field}
                                             inputId="product"
+                                            instanceId="product"
                                             isClearable
                                             isDisabled={isLoading}
                                             isLoading={isLoading}
