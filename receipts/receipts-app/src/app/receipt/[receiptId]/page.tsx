@@ -8,11 +8,12 @@ import { ReceiptWithRelationships } from '@/types/receipt.d';
 import { ReceiptText } from '@prisma/client';
 import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
-import { Button, Label, TextInput, Modal } from "flowbite-react";
+import { Button, Label, TextInput } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
 import CreatableSelect from 'react-select/creatable';
 import { StylesConfig } from 'react-select';
 import ImageComponent from '@/components/ImageComponent';
+import NewProductModal from '@/components/NewProductModal';
 import { useForm, SubmitHandler, Controller, set } from 'react-hook-form';
 
 interface Option {
@@ -39,7 +40,7 @@ const ReceiptPage = () => {
     // const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
     const [receiptTexts, setReceiptTexts] = useState<ReceiptText[]>([]);
 
-    const [openModal, setOpenModal] = useState(false);
+    const [openNewProductModal, setNewProductOpenModal] = useState(false);
 
     const { register, control, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
 
@@ -85,7 +86,7 @@ const ReceiptPage = () => {
     
     const handleCreateProduct = (inputValue: string) => {
         console.log('Creating a new product with the name:', inputValue);
-        setOpenModal(true);
+        setNewProductOpenModal(true);
         // setIsLoading(true);
         // setTimeout(() => {
         //     // TODO: temporary, should be replaced with a POST request to create a new product
@@ -304,63 +305,7 @@ const ReceiptPage = () => {
                     </Table.Body>
                 </Table>
                 {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
-                <Modal show={openModal} onClose={() => setOpenModal(false)}>
-                    <Modal.Header>Add new product</Modal.Header>
-                    <Modal.Body>
-                    <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-                    <div>
-                        <div className="mb-2 block">
-                        <Label htmlFor="newProductName" value="Product" />
-                        </div>
-                        <TextInput 
-                            id="newProductName" 
-                            {...register('newProductName', { required: false })}
-                            type="" 
-                        />
-                    </div>
-                    <div className="flex space-x-4">
-                        <div className="w-1/2">
-                            <div className="mb-2 block">
-                            <Label htmlFor="weight" value="Weight" />
-                            </div>
-                            <TextInput 
-                                id="weight" 
-                                {...register('weight', { required: true })}
-                                type="number" 
-                            />
-                            {errors.priceEach && <span>This field is required</span>}
-                        </div>
-                        <div className="w-1/2">
-                            <div className="mb-2 block">
-                            <Label htmlFor="unitOfMeasure" value="Unit of measure" />
-                            </div>
-                            <TextInput 
-                                id="unitOfMeasure" 
-                                {...register('unitOfMeasure', { required: true })}
-                                type="string" 
-                            />
-                            {errors.quantity && <span>This field is required</span>}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="mb-2 block">
-                        <Label htmlFor="referenceItem" value="Reference item" />
-                        </div>
-                        <TextInput 
-                            id="referenceItem" 
-                            {...register('referenceItem', { required: false })}
-                            type="text" 
-                        />
-                    </div>
-                    </form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                    <Button onClick={() => setOpenModal(false)}>Save</Button>
-                    <Button color="light" onClick={() => setOpenModal(false)}>
-                        Cancel
-                    </Button>
-                    </Modal.Footer>
-                </Modal>
+                <NewProductModal isOpen={openNewProductModal} onClose={() => setNewProductOpenModal(false)} onSubmit={() => {}} />
             </div>
         </div>
     )
