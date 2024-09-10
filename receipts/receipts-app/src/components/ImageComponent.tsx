@@ -130,17 +130,9 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
             });
             if (clickedRect) {
                 setActiveRectangleId(clickedRect.receiptTextId);
-                // setRectangles(prevRectangles => {
-                //     return prevRectangles.map(rectangle => {
-                //         if (rectangle.receiptTextId === clickedRect.receiptTextId) {
-                //             return { ...rectangle, selected: true };
-                //         } else {
-                //             return rectangle;
-                //         }
-                //     });
-                // });
                 onReceiptTextClick(clickedRect.receiptTextId);
             } else {
+                setActiveRectangleId(null);
                 onReceiptTextClick(null);
             }
         }
