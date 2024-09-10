@@ -8,7 +8,7 @@ import { ReceiptWithRelationships } from '@/types/receipt.d';
 import { ReceiptText } from '@prisma/client';
 import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
-import { Button, Label, TextInput } from "flowbite-react";
+import { Button, Label, TextInput, Modal } from "flowbite-react";
 import { DrawSquare, Pen } from "flowbite-react-icons/outline";
 import CreatableSelect from 'react-select/creatable';
 import { StylesConfig } from 'react-select';
@@ -39,6 +39,7 @@ const ReceiptPage = () => {
     // const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
     const [receiptTexts, setReceiptTexts] = useState<ReceiptText[]>([]);
 
+    const [openModal, setOpenModal] = useState(false);
 
     const { register, control, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
 
@@ -83,14 +84,16 @@ const ReceiptPage = () => {
     }, []);
     
     const handleCreateProduct = (inputValue: string) => {
-        setIsLoading(true);
-        setTimeout(() => {
-            // TODO: temporary, should be replaced with a POST request to create a new product
-            const newOption = createOption(inputValue, 0);
-            setIsLoading(false);
-            setOptions((prev) => [...prev, newOption]);
-            setProduct(newOption);
-        }, 1000);
+        console.log('Creating a new product with the name:', inputValue);
+        setOpenModal(true);
+        // setIsLoading(true);
+        // setTimeout(() => {
+        //     // TODO: temporary, should be replaced with a POST request to create a new product
+        //     const newOption = createOption(inputValue, 0);
+        //     setIsLoading(false);
+        //     setOptions((prev) => [...prev, newOption]);
+        //     setProduct(newOption);
+        // }, 1000);
     };
         
     const formatCurrency = (value: number): string => {
@@ -114,6 +117,17 @@ const ReceiptPage = () => {
             document.getElementById('product')?.focus();
         }
     };
+    
+    interface NewProductFormInputs {
+        newProductName: string;
+        weight: string; // will be converted to a float
+        unitOfMeasure: number;
+        referenceItemId: number;
+    }
+
+    const onNewProductSubmit: SubmitHandler<NewProductFormInputs> = async (data) => {
+        console.log('Creating a new product with the name:', data.newProductName);
+    }
 
     interface ExpenseFormInputs {
         priceEach: string; // will be converted to a float
@@ -290,6 +304,63 @@ const ReceiptPage = () => {
                     </Table.Body>
                 </Table>
                 {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
+                <Modal show={openModal} onClose={() => setOpenModal(false)}>
+                    <Modal.Header>Add new product</Modal.Header>
+                    <Modal.Body>
+                    <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+                    <div>
+                        <div className="mb-2 block">
+                        <Label htmlFor="newProductName" value="Product" />
+                        </div>
+                        <TextInput 
+                            id="newProductName" 
+                            {...register('newProductName', { required: false })}
+                            type="" 
+                        />
+                    </div>
+                    <div className="flex space-x-4">
+                        <div className="w-1/2">
+                            <div className="mb-2 block">
+                            <Label htmlFor="weight" value="Weight" />
+                            </div>
+                            <TextInput 
+                                id="weight" 
+                                {...register('weight', { required: true })}
+                                type="number" 
+                            />
+                            {errors.priceEach && <span>This field is required</span>}
+                        </div>
+                        <div className="w-1/2">
+                            <div className="mb-2 block">
+                            <Label htmlFor="unitOfMeasure" value="Unit of measure" />
+                            </div>
+                            <TextInput 
+                                id="unitOfMeasure" 
+                                {...register('unitOfMeasure', { required: true })}
+                                type="string" 
+                            />
+                            {errors.quantity && <span>This field is required</span>}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="mb-2 block">
+                        <Label htmlFor="referenceItem" value="Reference item" />
+                        </div>
+                        <TextInput 
+                            id="referenceItem" 
+                            {...register('referenceItem', { required: false })}
+                            type="text" 
+                        />
+                    </div>
+                    </form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                    <Button onClick={() => setOpenModal(false)}>Save</Button>
+                    <Button color="light" onClick={() => setOpenModal(false)}>
+                        Cancel
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         </div>
     )
