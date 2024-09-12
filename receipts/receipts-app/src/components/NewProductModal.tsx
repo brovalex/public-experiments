@@ -43,7 +43,7 @@ const customStyles: StylesConfig = {
     }),
 };
 
-const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, initialNewProductName }) => {    
+const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, initialNewProductName, onAddProduct }) => {    
     const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<NewProductFormInputs>();
     
     const [isLoading, setIsLoading] = useState(false);
@@ -112,8 +112,7 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
             }
             
             const newProduct = await response.json();
-            console.log('New product:', newProduct);
-            onClose();
+            onAddProduct(newProduct);
             
             // setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
             // setReceiptTexts((prevReceiptTexts) => prevReceiptTexts.map((receiptText) => {
