@@ -33,7 +33,6 @@ const ReceiptPage = () => {
     const [receipt, setReceipt] = useState<ReceiptWithRelationships | null>(null);
     const [selectedReceiptTextId, setSelectedReceiptTextId] = useState<number | null>(null);
     const [initialNewProductName, setInitialNewProductName] = useState<string | undefined>(undefined);
-    const [newProductName, setNewProductName] = useState<string | undefined>(undefined);
     
     // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
