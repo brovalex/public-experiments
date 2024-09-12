@@ -246,6 +246,7 @@ const ReceiptPage = () => {
                                             {...field}
                                             inputId="product"
                                             instanceId="product"
+                                            className='react-select-container'
                                             isClearable
                                             isDisabled={isLoading}
                                             isLoading={isLoading}

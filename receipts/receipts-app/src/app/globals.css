@@ -31,3 +31,8 @@ body {
     text-wrap: balance;
   }
 }
+
+.react-select-container input[type="text"]:focus {
+  /* hack for tailwind */
+  box-shadow: none;
+}
