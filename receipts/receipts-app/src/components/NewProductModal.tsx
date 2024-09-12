@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button, Label, TextInput, Modal, Select } from "flowbite-react";
 import { default as ReactSelect } from 'react-select';
@@ -33,12 +33,15 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) =>
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option | null>();
     const [referenceItem, setReferenceItem] = useState<Option | unknown>();
+    const productNameRef = useRef<HTMLInputElement | null>(null);
+    const { ref, ...rest } = register('newProductName', { required: false });
 
     // TODO: eww, copy paste
     const customStyles: StylesConfig = {
         control: (provided, state) => ({
           ...provided,
           padding: '0.25rem',
+          fontSize: '14px', 
           borderRadius: '0.375rem', // rounded-md
           backgroundColor: 'rgb(249, 250, 251)',
         }),
@@ -65,7 +68,7 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) =>
     };
 
     return (
-        <Modal show={isOpen} onClose={onClose}>
+        <Modal show={isOpen} onClose={onClose} initialFocus={productNameRef}>
             <Modal.Header>Add new product</Modal.Header>
             <Modal.Body>
                 <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(handleFormSubmit)}>
@@ -74,8 +77,12 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) =>
                             <Label htmlFor="newProductName" value="Product" />
                         </div>
                         <TextInput 
+                            {...rest} 
                             id="newProductName" 
-                            {...register('newProductName', { required: false })}
+                            ref={(e) => {
+                                ref(e)
+                                productNameRef.current = e
+                            }}
                             type="" 
                         />
                     </div>
@@ -122,6 +129,7 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) =>
                                 options={options}
                                 onChange={(newValue) => setReferenceItem(newValue)}
                                 value={referenceItem}
+                                styles={customStyles}
                             />}
                         />
                     </div>
