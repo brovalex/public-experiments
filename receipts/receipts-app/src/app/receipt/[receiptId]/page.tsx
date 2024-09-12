@@ -18,7 +18,7 @@ import { useForm, SubmitHandler, Controller, set } from 'react-hook-form';
 
 interface Option {
     readonly label: string;
-    readonly value: string;
+    readonly value: number;
 }
 
 const createOption = (label: string, id: number) => ({
@@ -88,14 +88,6 @@ const ReceiptPage = () => {
     const handleCreateProduct = (inputValue: string) => {
         setInitialNewProductName(inputValue);
         setNewProductOpenModal(true);
-        // setIsLoading(true);
-        // setTimeout(() => {
-        //     // TODO: temporary, should be replaced with a POST request to create a new product
-        //     const newOption = createOption(inputValue, 0);
-        //     setIsLoading(false);
-        //     setOptions((prev) => [...prev, newOption]);
-        //     setProduct(newOption);
-        // }, 1000);
     };
         
     const formatCurrency = (value: number): string => {
@@ -136,7 +128,6 @@ const ReceiptPage = () => {
     }
       
     const onSubmit: SubmitHandler<ExpenseFormInputs> = async (data) => {
-
         try {
             const response = await fetch('/api/expense', {
                 method: 'POST',
@@ -173,6 +164,17 @@ const ReceiptPage = () => {
             console.error('Error:', error);
         }
     };
+
+    const handleAddProduct = (newProduct) => {
+        setNewProductOpenModal(false)
+        setIsLoading(true);
+        setTimeout(() => {
+            setIsLoading(false);
+            const newOption: Option = createOption(newProduct.name + ' (' + newProduct.weight + ' ' + newProduct.unitOfMeasure + ')', newProduct.id);
+            setOptions((prev) => [...prev, newOption]);
+            setProduct(newProduct);
+        }, 1000);
+      };
     
     return (
         <div className="flex h-screen">
@@ -303,7 +305,12 @@ const ReceiptPage = () => {
                     </Table.Body>
                 </Table>
                 {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
-                <NewProductModal isOpen={openNewProductModal} onClose={() => setNewProductOpenModal(false)} initialNewProductName={initialNewProductName} />
+                <NewProductModal 
+                    isOpen={openNewProductModal} 
+                    onClose={() => setNewProductOpenModal(false)} 
+                    initialNewProductName={initialNewProductName} 
+                    onAddProduct={handleAddProduct} 
+                />
             </div>
         </div>
     )
