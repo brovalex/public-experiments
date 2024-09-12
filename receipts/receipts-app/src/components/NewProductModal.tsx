@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Label, TextInput, Modal } from "flowbite-react";
+import { Button, Label, TextInput, Modal, Select } from "flowbite-react";
 
 interface NewProductFormInputs {
     newProductName: string;
@@ -54,12 +54,14 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, onSu
                             <div className="mb-2 block">
                                 <Label htmlFor="unitOfMeasure" value="Unit of measure" />
                             </div>
-                            <TextInput 
-                                id="unitOfMeasure" 
-                                {...register('unitOfMeasure', { required: true })}
-                                type="string" 
-                            />
-                            {errors.unitOfMeasure && <span>This field is required</span>}
+                            <Select 
+                            id="unitOfMeasure" 
+                            {...register('unitOfMeasure', { required: true })}
+                            required>
+                                <option value="count">count</option>
+                                <option value="g">g</option>
+                                <option value="mL">mL</option>
+                            </Select>
                         </div>
                     </div>
                     <div>
