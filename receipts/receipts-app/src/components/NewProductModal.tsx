@@ -123,6 +123,7 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) =>
                                 {...field}
                                 inputId="referenceItem"
                                 instanceId="referenceItem"
+                                className='react-select-container'
                                 isClearable
                                 isDisabled={isLoading}
                                 isLoading={isLoading}
