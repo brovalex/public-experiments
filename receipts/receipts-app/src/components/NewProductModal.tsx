@@ -29,7 +29,7 @@ interface NewProductModalProps {
 }
 
 const onNewProductSubmit: SubmitHandler<NewProductFormInputs> = async (data) => {
-    console.log('Creating a new product with the name:', data.newProductName);
+    // console.log('Creating a new product with the name:', data.newProductName);
 }
 
 const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, initialNewProductName }) => {    
@@ -42,8 +42,6 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
     const productNameRef = useRef<HTMLInputElement | null>(null);
     const { ref, ...rest } = register('newProductName', { required: false });
     
-    console.log('initialNewProductName:', initialNewProductName);
-
     // TODO: eww, copy paste
     const customStyles: StylesConfig = {
         control: (provided, state) => ({
@@ -65,7 +63,6 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
             .then((data) => {
                 const options = data.map((referenceItem: any) => createOption(referenceItem.name, referenceItem.id));
                 setOptions(options);
-                console.log('Reference items:', options);
             })
             .catch((error) => console.error('Error fetching reference items:', error));
     }, []);
@@ -76,6 +73,26 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
     useEffect(() => {
         setValue('newProductName', initialNewProductName);
     }, [initialNewProductName, setValue]);
+
+
+    useEffect(() => {
+        // Handler to close the modal when Esc key is pressed
+        const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            onClose();
+        }
+        };
+
+        // Attach event listener if modal is open
+        if (isOpen) {
+        window.addEventListener('keydown', handleKeyDown);
+        }
+
+        // Cleanup event listener on unmount or when modal is closed
+        return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isOpen, onClose]);
 
     const handleFormSubmit = (data: NewProductFormInputs) => {
         // onSubmit(data);
@@ -151,7 +168,7 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
                     </div>
                     <div className="flex flex-wrap gap-2">
                         <Button type="submit">Add</Button>
-                        <Button color="light">Cancel</Button>
+                        <Button color="light" onClick={onClose}>Cancel</Button>
                     </div>
                 </form>
             </Modal.Body>
