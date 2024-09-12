@@ -8,7 +8,7 @@ interface NewProductFormInputs {
     newProductName: string;
     weight: string; // will be converted to a float
     unitOfMeasure: string;
-    referenceItem: string;
+    referenceItemId: string;
 }
 
 interface Option {
@@ -28,9 +28,20 @@ interface NewProductModalProps {
     initialNewProductName?: string | undefined;
 }
 
-const onNewProductSubmit: SubmitHandler<NewProductFormInputs> = async (data) => {
-    // console.log('Creating a new product with the name:', data.newProductName);
-}
+// TODO: eww, copy paste
+const customStyles: StylesConfig = {
+    control: (provided, state) => ({
+    ...provided,
+    padding: '0.25rem',
+    fontSize: '14px', 
+    borderRadius: '0.375rem', // rounded-md
+    backgroundColor: 'rgb(249, 250, 251)',
+    }),
+    input: (provided, state) => ({
+        ...provided,
+        boxShadow: 'none',
+    }),
+};
 
 const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, initialNewProductName }) => {    
     const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<NewProductFormInputs>();
@@ -41,21 +52,6 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
 
     const productNameRef = useRef<HTMLInputElement | null>(null);
     const { ref, ...rest } = register('newProductName', { required: false });
-    
-    // TODO: eww, copy paste
-    const customStyles: StylesConfig = {
-        control: (provided, state) => ({
-          ...provided,
-          padding: '0.25rem',
-          fontSize: '14px', 
-          borderRadius: '0.375rem', // rounded-md
-          backgroundColor: 'rgb(249, 250, 251)',
-        }),
-        input: (provided, state) => ({
-            ...provided,
-            boxShadow: 'none',
-        }),
-      };
 
     useEffect(() => {
         fetch('/api/referenceItem')
@@ -76,7 +72,6 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
         }
     }, [initialNewProductName, setValue]);
 
-
     useEffect(() => {
         // Handler to close the modal when Esc key is pressed
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -96,16 +91,52 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
         };
     }, [isOpen, onClose]);
 
-    const handleFormSubmit = (data: NewProductFormInputs) => {
-        // onSubmit(data);
-        onClose();
+    const handleNewProductFormSubmit: SubmitHandler<NewProductFormInputs> = async (data) => {
+        try {
+            const response = await fetch('/api/product', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: data.newProductName,
+                    weight: parseFloat(data.weight), // Convert to Float
+                    unitOfMeasure: data.unitOfMeasure,
+                    referenceItemId: parseInt(data.referenceItem, 10),
+                    referenceItemId: referenceItem ? parseInt(referenceItem.value) : null, // Convert to Int if not null
+                }),
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to submit the new product form');
+            }
+            
+            const newProduct = await response.json();
+            console.log('New product:', newProduct);
+            onClose();
+            
+            // setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+            // setReceiptTexts((prevReceiptTexts) => prevReceiptTexts.map((receiptText) => {
+            //     if (receiptText.id === selectedReceiptTextId) {
+            //         return { ...receiptText, expense: newExpense };
+            //     }
+            //     return receiptText;
+            // }
+            // ));
+            // setSelectedReceiptTextId(null);
+            // setProduct(null);
+            // reset();
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+    
 
     return (
         <Modal show={isOpen} onClose={onClose} initialFocus={productNameRef}>
             <Modal.Header>Add new product</Modal.Header>
             <Modal.Body>
-                <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(handleFormSubmit)}>
+                <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(handleNewProductFormSubmit)}>
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="newProductName" value="Product" />
