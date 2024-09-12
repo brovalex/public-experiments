@@ -71,7 +71,10 @@ const ReceiptPage = () => {
                     setExpenses(receipt.expenses);
                     setReceiptTexts(receipt.imageFiles[0]?.receiptTexts ?? []);
                 })
-                .catch((error) => console.error('Error fetching receipt:', error));
+                .catch((error) => console.error('Error fetching receipt:', error))
+                .finally(
+                    () => setIsLoading(false)
+                )
         }
     }, [receiptId]);
 
@@ -179,11 +182,15 @@ const ReceiptPage = () => {
     return (
         <div className="flex h-screen">
             <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
+            {isLoading ? (
+                    <p>Loading...</p>
+                ) : (
                 <ImageComponent 
                     imageUrl={imageUrl} 
                     receiptTexts={receiptTexts} 
                     onReceiptTextClick={handleRectangleClick}
                     />
+            )}
             </div>
             <div className="w-1/2 p-4 h-full overflow-y-scroll">
                 <h1 className="text-lg font-medium">Receipt #{receiptId}</h1>
