@@ -72,7 +72,7 @@ const ReceiptPage = () => {
                 })
                 .catch((error) => console.error('Error fetching receipt:', error));
         }
-    }, [receipt]);
+    }, [receiptId]);
 
     useEffect(() => {
         fetch('/api/product')
