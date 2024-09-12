@@ -305,7 +305,7 @@ const ReceiptPage = () => {
                     </Table.Body>
                 </Table>
                 {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
-                <NewProductModal isOpen={openNewProductModal} onClose={() => setNewProductOpenModal(false)} onSubmit={() => {}} />
+                <NewProductModal isOpen={openNewProductModal} onClose={() => setNewProductOpenModal(false)} />
             </div>
         </div>
     )
