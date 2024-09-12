@@ -32,6 +32,8 @@ const ReceiptPage = () => {
 
     const [receipt, setReceipt] = useState<ReceiptWithRelationships | null>(null);
     const [selectedReceiptTextId, setSelectedReceiptTextId] = useState<number | null>(null);
+    const [initialNewProductName, setInitialNewProductName] = useState<string | undefined>(undefined);
+    const [newProductName, setNewProductName] = useState<string | undefined>(undefined);
     
     // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
@@ -85,7 +87,7 @@ const ReceiptPage = () => {
     }, []);
     
     const handleCreateProduct = (inputValue: string) => {
-        console.log('Creating a new product with the name:', inputValue);
+        setInitialNewProductName(inputValue);
         setNewProductOpenModal(true);
         // setIsLoading(true);
         // setTimeout(() => {
@@ -124,10 +126,6 @@ const ReceiptPage = () => {
         weight: string; // will be converted to a float
         unitOfMeasure: number;
         referenceItemId: number;
-    }
-
-    const onNewProductSubmit: SubmitHandler<NewProductFormInputs> = async (data) => {
-        console.log('Creating a new product with the name:', data.newProductName);
     }
 
     interface ExpenseFormInputs {
@@ -306,7 +304,7 @@ const ReceiptPage = () => {
                     </Table.Body>
                 </Table>
                 {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
-                <NewProductModal isOpen={openNewProductModal} onClose={() => setNewProductOpenModal(false)} />
+                <NewProductModal isOpen={openNewProductModal} onClose={() => setNewProductOpenModal(false)} initialNewProductName={initialNewProductName} />
             </div>
         </div>
     )
