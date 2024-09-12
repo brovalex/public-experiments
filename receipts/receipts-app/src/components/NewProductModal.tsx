@@ -25,7 +25,7 @@ interface NewProductModalProps {
     isOpen: boolean;
     onClose: () => void;
     // onSubmit: () => void;
-    initialNewProductName?: string;
+    initialNewProductName?: string | undefined;
 }
 
 const onNewProductSubmit: SubmitHandler<NewProductFormInputs> = async (data) => {
@@ -36,7 +36,7 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
     const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<NewProductFormInputs>();
     
     const [isLoading, setIsLoading] = useState(false);
-    const [options, setOptions] = useState<Option | null>();
+    const [options, setOptions] = useState<Option[] | undefined>();
     const [referenceItem, setReferenceItem] = useState<Option | unknown>();
 
     const productNameRef = useRef<HTMLInputElement | null>(null);
@@ -71,7 +71,9 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
     // }, [variable1, setValue]);
     
     useEffect(() => {
-        setValue('newProductName', initialNewProductName);
+        if (initialNewProductName) {
+            setValue('newProductName', initialNewProductName);
+        }
     }, [initialNewProductName, setValue]);
 
 
