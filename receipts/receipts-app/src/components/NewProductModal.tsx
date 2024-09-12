@@ -24,17 +24,25 @@ const createOption = (label: string, id: number) => ({
 interface NewProductModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: () => void;
+    // onSubmit: () => void;
+    initialNewProductName?: string;
 }
 
-const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) => {
-    const { register, control, handleSubmit, formState: { errors } } = useForm<NewProductFormInputs>();
+const onNewProductSubmit: SubmitHandler<NewProductFormInputs> = async (data) => {
+    console.log('Creating a new product with the name:', data.newProductName);
+}
 
+const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, initialNewProductName }) => {    
+    const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<NewProductFormInputs>();
+    
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option | null>();
     const [referenceItem, setReferenceItem] = useState<Option | unknown>();
+
     const productNameRef = useRef<HTMLInputElement | null>(null);
     const { ref, ...rest } = register('newProductName', { required: false });
+    
+    console.log('initialNewProductName:', initialNewProductName);
 
     // TODO: eww, copy paste
     const customStyles: StylesConfig = {
@@ -61,6 +69,13 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) =>
             })
             .catch((error) => console.error('Error fetching reference items:', error));
     }, []);
+    
+    // useEffect(() => {
+    // }, [variable1, setValue]);
+    
+    useEffect(() => {
+        setValue('newProductName', initialNewProductName);
+    }, [initialNewProductName, setValue]);
 
     const handleFormSubmit = (data: NewProductFormInputs) => {
         // onSubmit(data);
@@ -83,7 +98,7 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose }) =>
                                 ref(e)
                                 productNameRef.current = e
                             }}
-                            type="" 
+                            type="text" 
                         />
                     </div>
                     <div className="flex space-x-4">
