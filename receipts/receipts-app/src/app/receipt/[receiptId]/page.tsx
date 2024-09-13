@@ -36,9 +36,7 @@ const ReceiptPage = () => {
     
     // TODO: only assuming using a single image for now, add support for multiple images later
     const imageUrl = receipt?.imageFiles[0]?.url ?? '';
-    // const expenses = receipt?.expenses ?? [];
     const [expenses, setExpenses] = useState<ExpenseWithRelationships[]>([]);
-    // const receiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
     const [receiptTexts, setReceiptTexts] = useState<ReceiptText[]>([]);
 
     const [openNewProductModal, setNewProductOpenModal] = useState(false);
@@ -82,44 +80,6 @@ const ReceiptPage = () => {
             setReceiptTexts(receipt?.imageFiles[0]?.receiptTexts ?? []);
         }
     }, [receipt]);
-
-    // useEffect(() => {
-    //     setExpenses([
-    //     {
-    //         "id": 1,
-    //         "priceEach": 6.35,
-    //         "quantity": 1,
-    //         "receiptId": 37,
-    //         "receiptTextId": 2693,
-    //         "productId": 77,
-    //         "createdAt": "2024-08-09T03:07:46.312Z",
-    //         "updatedAt": "2024-08-09T03:07:46.312Z",
-    //         "product": {
-    //             "id": 77,
-    //             "name": "Kinn english muffin tapioca",
-    //             "weight": 4,
-    //             "unitOfMeasure": "count",
-    //             "referenceItemId": 216,
-    //             "createdAt": "2024-08-09T02:49:34.202Z",
-    //             "updatedAt": "2024-08-09T02:49:34.202Z",
-    //             "referenceItem": {
-    //                 "id": 216,
-    //                 "name": "English muffins",
-    //                 "quantity": 6,
-    //                 "unitOfMeasure": "count",
-    //                 "price": 2.67,
-    //                 "pricePerWeight": 0.445,
-    //                 "referenceUrl": "https://walmart.ca/#missing",
-    //                 "createdAt": "2024-08-09T02:49:33.631Z",
-    //                 "updatedAt": "2024-08-09T02:49:33.631Z"
-    //             },
-    //         }
-    //     }]);
-    //     console.log('Static expenses:', expenses);
-    // }, []);
-    // useEffect(() => {
-    //     console.log('Expenses updated:', expenses); // Log updated state
-    // }, [expenses]); // This will log whenever `expenses` changes
 
     useEffect(() => {
         fetch('/api/product')
@@ -353,7 +313,7 @@ const ReceiptPage = () => {
                         </Table.Row>
                     </Table.Body>
                 </Table>
-                <pre>{JSON.stringify(receipt, null, 2)}</pre>
+                {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
                 <NewProductModal 
                     isOpen={openNewProductModal} 
                     onClose={() => setNewProductOpenModal(false)} 

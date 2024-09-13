@@ -64,9 +64,6 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
             .catch((error) => console.error('Error fetching reference items:', error));
     }, []);
     
-    // useEffect(() => {
-    // }, [variable1, setValue]);
-    
     useEffect(() => {
         if (initialNewProductName) {
             setValue('newProductName', initialNewProductName);
@@ -114,18 +111,6 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
             
             const newProduct = await response.json();
             onAddProduct(newProduct);
-            
-            // setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
-            // setReceiptTexts((prevReceiptTexts) => prevReceiptTexts.map((receiptText) => {
-            //     if (receiptText.id === selectedReceiptTextId) {
-            //         return { ...receiptText, expense: newExpense };
-            //     }
-            //     return receiptText;
-            // }
-            // ));
-            // setSelectedReceiptTextId(null);
-            // setProduct(null);
-            // reset();
         } catch (error) {
             console.error('Error:', error);
         }
