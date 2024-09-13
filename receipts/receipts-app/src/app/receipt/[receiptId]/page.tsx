@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ExpenseWithRelationships } from '@/types/expense.d';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
-import { ReceiptText } from '@prisma/client';
+import { Product, ReceiptText } from '@prisma/client';
 import { ImageFileWithRelationships } from '@/types/imageFile.d';
 import { Table } from "flowbite-react";
 import { Button, Label, TextInput } from "flowbite-react";
@@ -46,7 +46,7 @@ const ReceiptPage = () => {
     const { register, control, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
 
     const [isLoading, setIsLoading] = useState(false);
-    const [options, setOptions] = useState<Option | null>();
+    const [options, setOptions] = useState<Option[]>([]);
     const [product, setProduct] = useState<Option | unknown>();
     
     const customStyles: StylesConfig = {
@@ -68,8 +68,6 @@ const ReceiptPage = () => {
                 .then((res) => res.json())
                 .then((receipt) => {
                     setReceipt(receipt);
-                    setExpenses(receipt.expenses);
-                    setReceiptTexts(receipt.imageFiles[0]?.receiptTexts ?? []);
                 })
                 .catch((error) => console.error('Error fetching receipt:', error))
                 .finally(
@@ -77,6 +75,51 @@ const ReceiptPage = () => {
                 )
         }
     }, [receiptId]);
+
+    useEffect(() => {
+        if (receipt) {
+            setExpenses(receipt?.expenses);
+            setReceiptTexts(receipt?.imageFiles[0]?.receiptTexts ?? []);
+        }
+    }, [receipt]);
+
+    // useEffect(() => {
+    //     setExpenses([
+    //     {
+    //         "id": 1,
+    //         "priceEach": 6.35,
+    //         "quantity": 1,
+    //         "receiptId": 37,
+    //         "receiptTextId": 2693,
+    //         "productId": 77,
+    //         "createdAt": "2024-08-09T03:07:46.312Z",
+    //         "updatedAt": "2024-08-09T03:07:46.312Z",
+    //         "product": {
+    //             "id": 77,
+    //             "name": "Kinn english muffin tapioca",
+    //             "weight": 4,
+    //             "unitOfMeasure": "count",
+    //             "referenceItemId": 216,
+    //             "createdAt": "2024-08-09T02:49:34.202Z",
+    //             "updatedAt": "2024-08-09T02:49:34.202Z",
+    //             "referenceItem": {
+    //                 "id": 216,
+    //                 "name": "English muffins",
+    //                 "quantity": 6,
+    //                 "unitOfMeasure": "count",
+    //                 "price": 2.67,
+    //                 "pricePerWeight": 0.445,
+    //                 "referenceUrl": "https://walmart.ca/#missing",
+    //                 "createdAt": "2024-08-09T02:49:33.631Z",
+    //                 "updatedAt": "2024-08-09T02:49:33.631Z"
+    //             },
+    //         }
+    //     }]);
+    //     console.log('Static expenses:', expenses);
+    // }, []);
+    // useEffect(() => {
+    //     console.log('Expenses updated:', expenses); // Log updated state
+    // }, [expenses]); // This will log whenever `expenses` changes
 
     useEffect(() => {
         fetch('/api/product')
@@ -168,22 +211,18 @@ const ReceiptPage = () => {
         }
     };
 
-    const handleAddProduct = (newProduct) => {
+    const handleAddProduct = (newProduct: Product) => {
         setNewProductOpenModal(false)
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            const newOption: Option = createOption(newProduct.name + ' (' + newProduct.weight + ' ' + newProduct.unitOfMeasure + ')', newProduct.id);
-            setOptions((prev) => [...prev, newOption]);
-            setProduct(newProduct);
-        }, 1000);
+        const newOption: Option = createOption(newProduct.name + ' (' + newProduct.weight + ' ' + newProduct.unitOfMeasure + ')', newProduct.id);
+        setOptions((prev) => [...prev, newOption]);
+        setProduct(newProduct);
       };
     
     return (
         <div className="flex h-screen">
             <div className="w-1/2 h-full bg-gray-900 overflow-y-scroll">
             {isLoading ? (
-                    <p>Loading...</p>
+                    <p>Loading receipt...</p>
                 ) : (
                 <ImageComponent 
                     imageUrl={imageUrl} 
@@ -254,8 +293,6 @@ const ReceiptPage = () => {
                                             instanceId="product"
                                             className='react-select-container'
                                             isClearable
-                                            isDisabled={isLoading}
-                                            isLoading={isLoading}
                                             onChange={(newValue) => setProduct(newValue)}
                                             onCreateOption={handleCreateProduct}
                                             options={options}
@@ -311,7 +348,7 @@ const ReceiptPage = () => {
                         </Table.Row>
                     </Table.Body>
                 </Table>
-                {/* <pre>{JSON.stringify(receipt, null, 2)}</pre> */}
+                <pre>{JSON.stringify(receipt, null, 2)}</pre>
                 <NewProductModal 
                     isOpen={openNewProductModal} 
                     onClose={() => setNewProductOpenModal(false)} 
