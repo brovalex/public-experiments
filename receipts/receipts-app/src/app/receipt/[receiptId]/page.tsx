@@ -43,11 +43,11 @@ const ReceiptPage = () => {
 
     const [openNewProductModal, setNewProductOpenModal] = useState(false);
 
-    const { register, control, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
+    const { register, control, setValue, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
 
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option[]>([]);
-    const [product, setProduct] = useState<Option | unknown>();
+    const [product, setProduct] = useState<Option | null>(null);
     
     const customStyles: StylesConfig = {
         control: (provided, state) => ({
@@ -211,11 +211,16 @@ const ReceiptPage = () => {
         }
     };
 
+    const handleSelectProductOption = (option: { value: string; label: string }) => {
+        setValue('productId', option.value);
+        setProduct(option);
+      };
+
     const handleAddProduct = (newProduct: Product) => {
         setNewProductOpenModal(false)
         const newOption: Option = createOption(newProduct.name + ' (' + newProduct.weight + ' ' + newProduct.unitOfMeasure + ')', newProduct.id);
         setOptions((prev) => [...prev, newOption]);
-        setProduct(newProduct);
+        handleSelectProductOption(newOption);
       };
     
     return (

@@ -58,7 +58,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
         });
 
         setRectangles(newRectangles);
-      }, [receiptTexts, rectangles]);
+      }, [receiptTexts]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -111,7 +111,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
         return () => {
           window.removeEventListener('resize', handleResize);
         };
-    }, [receiptTexts, rectangles]);
+    }, [rectangles]);
 
     const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
