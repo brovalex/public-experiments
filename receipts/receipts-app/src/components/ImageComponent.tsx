@@ -58,7 +58,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
         });
 
         setRectangles(newRectangles);
-      }, [receiptTexts]);
+      }, [receiptTexts, rectangles]);
 
     useEffect(() => {
         const canvas = canvasRef.current;

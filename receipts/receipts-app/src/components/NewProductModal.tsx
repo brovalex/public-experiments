@@ -3,6 +3,7 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button, Label, TextInput, Modal, Select } from "flowbite-react";
 import { default as ReactSelect } from 'react-select';
 import { StylesConfig } from 'react-select';
+import { Product } from '@prisma/client';
 
 interface NewProductFormInputs {
     newProductName: string;
@@ -24,8 +25,8 @@ const createOption = (label: string, id: number) => ({
 interface NewProductModalProps {
     isOpen: boolean;
     onClose: () => void;
-    // onSubmit: () => void;
     initialNewProductName?: string | undefined;
+    onAddProduct: (newProduct: Product) => void;
 }
 
 // TODO: eww, copy paste
