@@ -1,7 +1,7 @@
 // components/ImageComponent.tsx
 
 import { ReceiptTextWithRelationships } from '@/types/receiptText';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { calculateRectangles } from '@/utils/rectangleUtils';
 
 interface BoundingBox {
@@ -15,7 +15,7 @@ interface ImageComponentProps {
     onReceiptTextClick: (id: number | null) => void;
 }
 
-const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts, onReceiptTextClick }) => {
+const ImageComponent: React.FC<ImageComponentProps> = forwardRef(({ imageUrl, receiptTexts, onReceiptTextClick }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const [rectangles, setRectangles] = useState<Rectangle[]>([]);
@@ -66,6 +66,13 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
 
     drawBoxes(); // Initial draw
 
+    useImperativeHandle(ref, () => ({
+        resetColors() {
+            setActiveRectangleId(null);
+            onReceiptTextClick(null);
+        },
+      }));
+
     const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
         if (canvas) {
@@ -107,6 +114,6 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
             )}
         </div>
     );
-}
+});
 
 export default ImageComponent;

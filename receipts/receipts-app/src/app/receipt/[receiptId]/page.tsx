@@ -1,7 +1,7 @@
 'use client'
 // src/app/receipt/[receiptId]/page.tsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { ExpenseWithRelationships } from '@/types/expense.d';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
@@ -40,6 +40,14 @@ const ReceiptPage = () => {
     const [receiptTexts, setReceiptTexts] = useState<ReceiptText[]>([]);
 
     const [openNewProductModal, setNewProductOpenModal] = useState(false);
+    
+    const ImageComponentRef = useRef<{ resetColors: () => void } | null>(null);
+
+    const handleResetColors = () => {
+        if (ImageComponentRef.current) {
+          ImageComponentRef.current.resetColors();
+        }
+      };
 
     const { register, control, setValue, handleSubmit, formState: { errors }, reset } = useForm<ExpenseFormInputs>();
 
@@ -165,6 +173,7 @@ const ReceiptPage = () => {
             ));
             setSelectedReceiptTextId(null);
             setProduct(null);
+            handleResetColors();
             reset();
         } catch (error) {
             console.error('Error:', error);
@@ -193,6 +202,7 @@ const ReceiptPage = () => {
                     imageUrl={imageUrl} 
                     receiptTexts={receiptTexts} 
                     onReceiptTextClick={handleRectangleClick}
+                    ref={ImageComponentRef}
                     />
             )}
             </div>
