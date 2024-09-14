@@ -31,87 +31,73 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
     const [rectangles, setRectangles] = useState<Rectangle[]>([]);
     const [activeRectangleId, setActiveRectangleId] = useState<number | null>(null);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const image = imageRef.current;
-        
+    const canvas = canvasRef.current;
+    const image = imageRef.current;
+    
+    const drawBoxes = () => {
         if (!canvas || !image) return;
         if (receiptTexts.length === 0) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        canvas.width = image.clientWidth;
+        canvas.height = image.clientHeight;
 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        rectangles.forEach(rectangle => {
+            const { rectX, rectY, rectWidth, rectHeight } = rectangle;
+            ctx.lineWidth = 2;
+            if (rectangle.expenseId) {
+                // ctx.strokeStyle = '#FDE047';
+                ctx.fillStyle = '#FDE047';
+            } else {
+                // ctx.strokeStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
+            }
+            if(rectangle.receiptTextId === activeRectangleId) {
+                ctx.fillStyle = '#9EFF00';
+            }
+            // ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
+            ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+        });
+    };
+
+    const calculateRectangles = (receiptTexts: ReceiptTextWithRelationships[]): Rectangle[] => {
+        if (!canvas || !image) return [];
         const newRectangles = receiptTexts.map((receiptText) => {
             const parsedBoundingBox: number[][] = receiptText.boundingBox ? JSON.parse(receiptText.boundingBox) : [];
-
+    
             const xCoords = parsedBoundingBox.map(coord => coord[0]);
             const yCoords = parsedBoundingBox.map(coord => coord[1]);
-
+    
             const x = Math.min(...xCoords);
             const y = Math.min(...yCoords);
             const width = Math.max(...xCoords) - x;
             const height = Math.max(...yCoords) - y;
-
+    
             const rectX = (x / image.naturalWidth) * canvas.width;
             const rectY = (y / image.naturalHeight) * canvas.height;
             const rectWidth = (width / image.naturalWidth) * canvas.width;
             const rectHeight = (height / image.naturalHeight) * canvas.height;
-
+            
             return { rectX, rectY, rectWidth, rectHeight, receiptTextId: receiptText.id, expenseId: receiptText.expense?.id, selected: false };
         });
+        return newRectangles
+    };
 
-        setRectangles(newRectangles);
-      }, [receiptTexts]);
+    const handleResize = () => {
+        drawBoxes();
+    };
+    window.addEventListener('resize', handleResize);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const image = imageRef.current;
-        
-        if (!canvas || !image) return;
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        
-        const drawBoxes = () => {
-          if (canvas && image) {
-            canvas.width = image.clientWidth;
-            canvas.height = image.clientHeight;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const newRectangles = calculateRectangles(receiptTexts);
+        setRectangles(newRectangles);
+        drawBoxes();
+    }, [receiptTexts]);
 
-            rectangles.forEach(rectangle => {
-                // const BoundingBox = receiptText.boundingBox ? JSON.parse(receiptText.boundingBox) : null;
-                // const expense = receiptText.expense;
-                // if (!BoundingBox) return;
-                // const [x1, y1] = BoundingBox[0];
-                // const [x2, y2] = BoundingBox[2];
-
-                const { rectX, rectY, rectWidth, rectHeight } = rectangle;
-                
-                ctx.lineWidth = 2;
-                if (rectangle.expenseId) {
-                    // ctx.strokeStyle = '#FDE047';
-                    ctx.fillStyle = '#FDE047';
-                } else {
-                    // ctx.strokeStyle = 'gray';
-                    ctx.fillStyle = 'lightgray';
-                }
-                if(rectangle.receiptTextId === activeRectangleId) {
-                    ctx.fillStyle = '#9EFF00';
-                }
-                // ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
-                ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
-            });
-          }
-        };
-    
-        const handleResize = () => {
-          drawBoxes();
-        };
-
-        window.addEventListener('resize', handleResize);
-        drawBoxes(); // Initial draw
-    
-        return () => {
-          window.removeEventListener('resize', handleResize);
-        };
-    }, [rectangles]);
+    drawBoxes(); // Initial draw
 
     const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
