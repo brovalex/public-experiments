@@ -302,7 +302,7 @@ const ReceiptPage = () => {
                                             id="quantity" 
                                             {...register('quantity', { required: true })}
                                             type="number" 
-                                            value={1}
+                                            defaultValue={1}
                                         />
                                         {errors.quantity && <span>This field is required</span>}
                                     </div>
