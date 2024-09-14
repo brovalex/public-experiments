@@ -2,7 +2,7 @@
 
 import { ReceiptTextWithRelationships } from '@/types/receiptText';
 import React, { useRef, useEffect, useState } from 'react';
-import { set } from 'react-hook-form';
+import { calculateRectangles } from '@/utils/rectangleUtils';
 
 interface BoundingBox {
     receiptTextId: number;
@@ -13,16 +13,6 @@ interface ImageComponentProps {
     imageUrl: string;
     receiptTexts: ReceiptTextWithRelationships[];
     onReceiptTextClick: (id: number | null) => void;
-}
-
-interface Rectangle {
-    rectX: number;
-    rectY: number;
-    rectWidth: number;
-    rectHeight: number;
-    receiptTextId: number;
-    expenseId: number | null | undefined;
-    selected?: boolean;
 }
 
 const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts, onReceiptTextClick }) => {
@@ -63,36 +53,13 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ imageUrl, receiptTexts,
         });
     };
 
-    const calculateRectangles = (receiptTexts: ReceiptTextWithRelationships[]): Rectangle[] => {
-        if (!canvas || !image) return [];
-        const newRectangles = receiptTexts.map((receiptText) => {
-            const parsedBoundingBox: number[][] = receiptText.boundingBox ? JSON.parse(receiptText.boundingBox) : [];
-    
-            const xCoords = parsedBoundingBox.map(coord => coord[0]);
-            const yCoords = parsedBoundingBox.map(coord => coord[1]);
-    
-            const x = Math.min(...xCoords);
-            const y = Math.min(...yCoords);
-            const width = Math.max(...xCoords) - x;
-            const height = Math.max(...yCoords) - y;
-    
-            const rectX = (x / image.naturalWidth) * canvas.width;
-            const rectY = (y / image.naturalHeight) * canvas.height;
-            const rectWidth = (width / image.naturalWidth) * canvas.width;
-            const rectHeight = (height / image.naturalHeight) * canvas.height;
-            
-            return { rectX, rectY, rectWidth, rectHeight, receiptTextId: receiptText.id, expenseId: receiptText.expense?.id, selected: false };
-        });
-        return newRectangles
-    };
-
     const handleResize = () => {
         drawBoxes();
     };
     window.addEventListener('resize', handleResize);
 
     useEffect(() => {
-        const newRectangles = calculateRectangles(receiptTexts);
+        const newRectangles = calculateRectangles(receiptTexts, canvas, image);
         setRectangles(newRectangles);
         drawBoxes();
     }, [receiptTexts]);
