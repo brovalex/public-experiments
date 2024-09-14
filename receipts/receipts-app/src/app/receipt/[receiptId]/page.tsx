@@ -177,7 +177,7 @@ const ReceiptPage = () => {
             }
             ));
             setSelectedReceiptTextId(null);
-            setProduct(null);
+            setProduct(null); // reset react-select
             handleResetColors();
             reset();
         } catch (error) {

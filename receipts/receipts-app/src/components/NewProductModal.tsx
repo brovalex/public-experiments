@@ -45,7 +45,7 @@ const customStyles: StylesConfig = {
 };
 
 const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, initialNewProductName, onAddProduct }) => {    
-    const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<NewProductFormInputs>();
+    const { register, control, handleSubmit, setValue, formState: { errors }, reset } = useForm<NewProductFormInputs>();
     
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option[] | undefined>();
@@ -110,6 +110,8 @@ const NewProductModal: React.FC<NewProductModalProps> = ({ isOpen, onClose, init
             }
             
             const newProduct = await response.json();
+            setReferenceItem(null); // reset react-select
+            reset();
             onAddProduct(newProduct);
         } catch (error) {
             console.error('Error:', error);
