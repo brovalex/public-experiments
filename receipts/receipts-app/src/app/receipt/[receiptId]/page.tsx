@@ -1,7 +1,7 @@
 'use client'
 // src/app/receipt/[receiptId]/page.tsx
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import { useParams } from 'next/navigation';
 import { ExpenseWithRelationships } from '@/types/expense.d';
 import { ReceiptWithRelationships } from '@/types/receipt.d';
@@ -15,6 +15,8 @@ import { StylesConfig } from 'react-select';
 import ImageComponent from '@/components/ImageComponent';
 import NewProductModal from '@/components/NewProductModal';
 import { useForm, SubmitHandler, Controller, set } from 'react-hook-form';
+import exp from 'constants';
+import { sortExpenses } from '@/utils/expensesUtils';
 
 interface Option {
     readonly label: string;
@@ -84,8 +86,11 @@ const ReceiptPage = () => {
 
     useEffect(() => {
         if (receipt) {
-            setExpenses(receipt?.expenses);
-            setReceiptTexts(receipt?.imageFiles[0]?.receiptTexts ?? []);
+            const newExpenses = receipt?.expenses;
+            const newReceiptTexts = receipt?.imageFiles[0]?.receiptTexts ?? [];
+            const sortedExpenses = sortExpenses(newExpenses, newReceiptTexts);
+            setExpenses(sortedExpenses);
+            setReceiptTexts(newReceiptTexts);
         }
     }, [receipt]);
 
