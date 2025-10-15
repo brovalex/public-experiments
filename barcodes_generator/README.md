@@ -5,7 +5,7 @@ A Python script for generating printable barcode labels in PDF format. Creates C
 ## Features
 
 - **Vector-based barcodes**: High-quality Code 128 barcodes that scale perfectly for printing
-- **Full-width design**: Barcodes stretch to fill the entire label width for maximum scanning area
+- **Flexible width design**: Barcodes stretch to fill the entire label width by default, or use normal width with `--normal-width` option
 - **Duplicate prevention**: Automatically tracks used barcode values to prevent duplicates
 - **Template system**: Support for different label layouts (Avery 5160, 5163, etc.)
 - **Customizable prefixes**: Configure letter prefixes and number of digits
@@ -54,6 +54,7 @@ python generate_labels.py [OPTIONS]
 | `--count` | integer | `30` | Number of labels to generate |
 | `--output` | string | auto-generated | Output PDF filename |
 | `--border` | flag | disabled | Add thin grey border around each label |
+| `--normal-width` | flag | disabled | Use normal barcode width instead of full label width |
 | `--list-templates` | flag | disabled | List available templates and exit |
 
 ### Examples
@@ -82,6 +83,11 @@ python generate_labels.py --template avery5163 --prefix P --digits 3 --count 20
 **Custom output filename:**
 ```bash
 python generate_labels.py --prefix INV --digits 4 --count 60 --output inventory_labels.pdf
+```
+
+**Normal width barcodes (not stretched to full label width):**
+```bash
+python generate_labels.py --prefix NORM --digits 4 --count 30 --normal-width
 ```
 
 **List available templates:**
@@ -138,7 +144,7 @@ Each label contains:
 
 - **Format**: Code 128 (optimal for phone camera scanning)
 - **Height**: 0.15 inches (3.81mm)
-- **Width**: Full label width with minimal margins
+- **Width**: Full label width with minimal margins (default), or normal width with `--normal-width`
 - **Text**: 5pt Courier monospace font
 - **Encoding**: Supports alphanumeric characters
 

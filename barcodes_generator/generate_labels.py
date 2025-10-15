@@ -61,7 +61,7 @@ class BarcodeGenerator:
                 return barcode_value
         raise ValueError(f"Could not generate unique barcode after {max_attempts} attempts")
 
-    def create_barcode_svg(self, value, width_points, height_points):
+    def create_barcode_svg(self, value, width_points, height_points, use_full_width=True):
         """Create a barcode SVG with the specified dimensions."""
         # Create barcode with SVG writer
         writer = SVGWriter()
@@ -93,43 +93,57 @@ class BarcodeGenerator:
         svg_width = float(root.get('width').replace('mm', ''))
         svg_height = float(root.get('height').replace('mm', ''))
         
-        # Calculate how much to stretch horizontally
-        stretch_factor = (width_mm / svg_width)
+        # Register namespace to handle SVG properly
+        ET.register_namespace('', 'http://www.w3.org/2000/svg')
         
-        # Update SVG dimensions
-        root.set('width', f'{width_mm}mm')
+        if use_full_width:
+            # Calculate how much to stretch horizontally for full width
+            stretch_factor = (width_mm / svg_width)
+            
+            # Update SVG dimensions to full width
+            root.set('width', f'{width_mm}mm')
+            
+            # Process all rect elements (barcode bars) - stretch them horizontally
+            for rect in root.iter('{http://www.w3.org/2000/svg}rect'):
+                if rect.get('style') and 'fill:black' in rect.get('style'):
+                    # This is a barcode bar
+                    x_str = rect.get('x', '0')
+                    if 'mm' in x_str:
+                        x = float(x_str.replace('mm', ''))
+                        width = float(rect.get('width').replace('mm', ''))
+                        
+                        # Stretch the position and width
+                        rect.set('x', f'{x * stretch_factor}mm')
+                        rect.set('width', f'{width * stretch_factor}mm')
+                        
+                        # Force the height to our desired barcode height
+                        rect.set('height', f'{barcode_height_mm}mm')
+            
+            # Center text in the full width
+            text_x_pos = width_mm / 2
+        else:
+            # Keep original width for normal-width barcodes
+            # Just fix the barcode height
+            for rect in root.iter('{http://www.w3.org/2000/svg}rect'):
+                if rect.get('style') and 'fill:black' in rect.get('style'):
+                    # Force the height to our desired barcode height
+                    rect.set('height', f'{barcode_height_mm}mm')
+            
+            # Keep text in original position (already centered)
+            text_x_pos = svg_width / 2
+        
         # Also update height to accommodate our smaller barcode and repositioned text
         new_svg_height = barcode_height_mm + 6  # barcode height + small space for text
         root.set('height', f'{new_svg_height}mm')
         
-        # Register namespace to handle SVG properly
-        ET.register_namespace('', 'http://www.w3.org/2000/svg')
-        
-        # Process all rect elements (barcode bars) - stretch them horizontally and fix height
-        for rect in root.iter('{http://www.w3.org/2000/svg}rect'):
-            if rect.get('style') and 'fill:black' in rect.get('style'):
-                # This is a barcode bar
-                x_str = rect.get('x', '0')
-                if 'mm' in x_str:
-                    x = float(x_str.replace('mm', ''))
-                    width = float(rect.get('width').replace('mm', ''))
-                    
-                    # Stretch the position and width
-                    rect.set('x', f'{x * stretch_factor}mm')
-                    rect.set('width', f'{width * stretch_factor}mm')
-                    
-                    # Force the height to our desired barcode height
-                    rect.set('height', f'{barcode_height_mm}mm')
-        
-        # Process text elements - keep them centered but not stretched
+        # Process text elements - position and style them
         for text in root.iter('{http://www.w3.org/2000/svg}text'):
-            # Get original x position
+            # Get original position
             x_str = text.get('x', '')
             y_str = text.get('y', '')
             if 'mm' in x_str:
-                x = float(x_str.replace('mm', ''))
-                # Center the text in the new width
-                text.set('x', f'{width_mm / 2}mm')
+                # Center the text horizontally 
+                text.set('x', f'{text_x_pos}mm')
                 
                 # Position text right under the barcode
                 if 'mm' in y_str:
@@ -158,7 +172,7 @@ class BarcodeGenerator:
         
         return drawing
 
-    def generate_labels(self, template_name, prefix, digits, count, output_file=None, show_border=False):
+    def generate_labels(self, template_name, prefix, digits, count, output_file=None, show_border=False, normal_width=False):
         """Generate a PDF with barcode labels."""
         if template_name not in self.templates:
             raise ValueError(f"Template '{template_name}' not found")
@@ -213,7 +227,8 @@ class BarcodeGenerator:
             barcode_drawing = self.create_barcode_svg(
                 barcode_value,
                 barcode_width,
-                barcode_height
+                barcode_height,
+                use_full_width=not normal_width  # Invert normal_width to get use_full_width
             )
             
             if barcode_drawing:
@@ -260,6 +275,8 @@ def main():
                        help='List available templates')
     parser.add_argument('--border', action='store_true',
                        help='Add thin grey border around each label')
+    parser.add_argument('--normal-width', action='store_true',
+                       help='Use normal barcode width instead of full label width')
     
     args = parser.parse_args()
     
@@ -278,7 +295,8 @@ def main():
             args.digits,
             args.count,
             args.output,
-            args.border
+            args.border,
+            args.normal_width
         )
         print(f"\nSuccessfully generated {count} labels")
         print(f"Output saved to: {output_file}")
