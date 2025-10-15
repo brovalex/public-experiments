@@ -1,0 +1,4 @@
+python-barcode==0.15.1
+reportlab==4.2.2
+svglib==1.5.1
+lxml>=5.1.0

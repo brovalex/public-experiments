@@ -1,0 +1,4 @@
+output/
+.venv/
+.claude/
+barcodes.csv

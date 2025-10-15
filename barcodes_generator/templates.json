@@ -1,0 +1,66 @@
+{
+  "avery5160": {
+    "name": "Avery 5160",
+    "description": "30 labels per sheet, 3x10 layout",
+    "page_size": {
+      "width": 8.5,
+      "height": 11,
+      "unit": "inch"
+    },
+    "label": {
+      "width": 2.625,
+      "height": 1.0,
+      "unit": "inch"
+    },
+    "margins": {
+      "top": 0.5,
+      "left": 0.1875,
+      "unit": "inch"
+    },
+    "spacing": {
+      "horizontal": 0.125,
+      "vertical": 0.0,
+      "unit": "inch"
+    },
+    "layout": {
+      "columns": 3,
+      "rows": 10
+    },
+    "barcode": {
+      "height_ratio": 0.5,
+      "padding": 0.1
+    }
+  },
+  "avery5163": {
+    "name": "Avery 5163",
+    "description": "10 labels per sheet, 2x5 layout",
+    "page_size": {
+      "width": 8.5,
+      "height": 11,
+      "unit": "inch"
+    },
+    "label": {
+      "width": 4.0,
+      "height": 2.0,
+      "unit": "inch"
+    },
+    "margins": {
+      "top": 0.5,
+      "left": 0.1875,
+      "unit": "inch"
+    },
+    "spacing": {
+      "horizontal": 0.125,
+      "vertical": 0.0,
+      "unit": "inch"
+    },
+    "layout": {
+      "columns": 2,
+      "rows": 5
+    },
+    "barcode": {
+      "height_ratio": 0.5,
+      "padding": 0.1
+    }
+  }
+}
