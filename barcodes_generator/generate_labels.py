@@ -196,9 +196,12 @@ class BarcodeGenerator:
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             output_file = f"output/labels_{template_name}_{timestamp}.pdf"
         
-        # Create PDF
-        c = canvas.Canvas(output_file, pagesize=letter)
-        page_width, page_height = letter
+        # Create PDF with template-specified page size
+        page_width_pt = template['page_size']['width'] * 72
+        page_height_pt = template['page_size']['height'] * 72
+        page_size = (page_width_pt, page_height_pt)
+        c = canvas.Canvas(output_file, pagesize=page_size)
+        page_width, page_height = page_size
         
         # Generate barcodes and place them on labels
         labels_per_page = template['layout']['rows'] * template['layout']['columns']

@@ -62,5 +62,69 @@
       "height_ratio": 0.5,
       "padding": 0.1
     }
+  },
+"marley_doubles": {
+    "name": "Marley Doubles",
+    "description": "15 labels per sheet, 3x5 layout",
+    "page_size": {
+      "width": 8.5,
+      "height": 11,
+      "unit": "inch"
+    },
+    "label": {
+      "width": 2.625,
+      "height": 2.0,
+      "unit": "inch"
+    },
+    "margins": {
+      "top": 0.5,
+      "left": 0.1875,
+      "unit": "inch"
+    },
+    "spacing": {
+      "horizontal": 0.125,
+      "vertical": 0.0,
+      "unit": "inch"
+    },
+    "layout": {
+      "columns": 3,
+      "rows": 10
+    },
+    "barcode": {
+      "height_ratio": 0.5,
+      "padding": 0.1
+    }
+  },
+"experiment_folded_calendars": {
+    "name": "Experiment: Folded Calendars",
+    "description": "Calendar length, 2x36 layout",
+    "page_size": {
+      "width": 7,
+      "height": 42,
+      "unit": "inch"
+    },
+    "label": {
+      "width": 2.625,
+      "height": 2.25,
+      "unit": "inch"
+    },
+    "margins": {
+      "top": 0,
+      "left": 0.4375,
+      "unit": "inch"
+    },
+    "spacing": {
+      "horizontal": 0.875,
+      "vertical": 0.0,
+      "unit": "inch"
+    },
+    "layout": {
+      "columns": 2,
+      "rows": 18
+    },
+    "barcode": {
+      "height_ratio": 0.5,
+      "padding": 0.1
+    }
   }
 }
